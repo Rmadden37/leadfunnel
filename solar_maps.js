@@ -6,7 +6,7 @@ let buildingPolygon;
 let fluxOverlay;
 
 // UPDATE THIS TO YOUR ACTUAL VERCEL DEPLOYMENT URL
-const PROXY_BASE_URL = 'https://your-app-name.vercel.app'; // CHANGE THIS!
+const PROXY_BASE_URL = 'leadfunnel-rho.vercel.apphttps://leadfunnel-rho.vercel.app/'; // CHANGE THIS!
 
 function initMap() {
     console.log("Initializing Google Maps...");

@@ -183,3 +183,213 @@ body {
             font-size: 0.875rem;
             color: #6c757d;
         }
+
+        /* Enhanced Mobile Optimization Styles */
+        
+        /* Responsive map container */
+        #map {
+            height: 250px;
+            border-radius: 0.5rem;
+            transition: height 0.3s ease;
+        }
+        
+        @media (min-width: 768px) {
+            #map {
+                height: 400px;
+            }
+        }
+        
+        /* Touch-friendly interactive elements */
+        button, .cta-button, .main-cta-button {
+            min-height: 44px; /* Apple's recommended touch target size */
+            min-width: 44px;
+        }
+        
+        /* Loading skeleton animations */
+        .loading-skeleton {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .5;
+            }
+        }
+        
+        /* Enhanced loading states */
+        #solarInfo.loading {
+            opacity: 0.7;
+            pointer-events: none;
+            position: relative;
+        }
+        
+        /* Improved mobile form inputs */
+        input[type="text"], input[type="email"], input[type="tel"] {
+            font-size: 16px; /* Prevents zoom on iOS */
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            transition: border-color 0.2s ease;
+        }
+        
+        input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Mobile-optimized Google Places Autocomplete */
+        .pac-container {
+            background-color: #FFF;
+            z-index: 1000;
+            position: fixed !important;
+            display: inline-block;
+            float: left;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 20px 25px -5px rgba(0, 0, 0, 0.04);
+            border: none;
+            max-width: calc(100vw - 32px);
+            left: 16px !important;
+            right: 16px !important;
+        }
+        
+        .pac-item {
+            padding: 12px 16px;
+            font-size: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.2s ease;
+        }
+        
+        .pac-item:hover, .pac-item.pac-item-selected {
+            background-color: #f0f4f8;
+        }
+        
+        .pac-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Mobile-specific solar info cards */
+        @media (max-width: 768px) {
+            .solar-metric-card {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            
+            .solar-metric-value {
+                font-size: 1.5rem;
+                line-height: 1.2;
+            }
+            
+            .solar-metric-label {
+                font-size: 0.75rem;
+                margin-top: 4px;
+            }
+        }
+        
+        /* Enhanced error states */
+        .error-state {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        /* Network quality indicators */
+        .connection-slow {
+            position: relative;
+        }
+        
+        .connection-slow::before {
+            content: "🐌";
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 12px;
+        }
+        
+        /* Progressive disclosure for mobile */
+        @media (max-width: 768px) {
+            .desktop-only {
+                display: none !important;
+            }
+            
+            .mobile-stack > * {
+                margin-bottom: 16px;
+            }
+            
+            .mobile-condensed {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+        }
+        
+        /* Improved touch interactions */
+        .touch-target {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .touch-target::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: width 0.6s, height 0.6s, margin-left 0.6s, margin-top 0.6s;
+        }
+        
+        .touch-target:active::before {
+            width: 300px;
+            height: 300px;
+            margin-left: -150px;
+            margin-top: -150px;
+        }
+        
+        /* Accessibility improvements for mobile */
+        @media (prefers-reduced-motion: reduce) {
+            .spinner,
+            .loading-skeleton,
+            .touch-target::before {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+        
+        /* Dark mode support preparation */
+        @media (prefers-color-scheme: dark) {
+            .pac-container {
+                background-color: #374151;
+                color: #f9fafb;
+            }
+            
+            .pac-item:hover, .pac-item.pac-item-selected {
+                background-color: #4b5563;
+            }
+        }
+        
+        /* Improved focus states for accessibility */
+        button:focus, input:focus, select:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+        
+        /* Safe area handling for iOS */
+        @supports (padding: max(0px)) {
+            .safe-area-top {
+                padding-top: max(16px, env(safe-area-inset-top));
+            }
+            
+            .safe-area-bottom {
+                padding-bottom: max(16px, env(safe-area-inset-bottom));
+            }
+        }
