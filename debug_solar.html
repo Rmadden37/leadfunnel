@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Maps Debug</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f5f5;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px;
+        }
+        #map { 
+            width: 100%; 
+            height: 400px; 
+            border: 1px solid #ddd; 
+            margin: 20px 0;
+        }
+        input, button { 
+            padding: 10px; 
+            margin: 5px; 
+            font-size: 16px;
+        }
+        .debug { 
+            background: #f0f0f0; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌞 Solar Maps Debug Tool</h1>
+        
+        <div class="debug" id="debugLog">
+            <strong>Debug Log:</strong><br>
+            Initializing...
+        </div>
+        
+        <div>
+            <input type="text" id="addressInput" placeholder="Enter address..." style="width: 70%;" />
+            <button id="searchButton">Test Analysis</button>
+        </div>
+        
+        <div id="map"></div>
+        
+        <div id="solarInfo">
+            <div id="insightsDetail">
+                <p>Enter an address above to test solar analysis.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Debug logging function
+        function debugLog(message) {
+            console.log(message);
+            const debugEl = document.getElementById('debugLog');
+            if (debugEl) {
+                debugEl.innerHTML += '<br>' + new Date().toLocaleTimeString() + ': ' + message;
+                debugEl.scrollTop = debugEl.scrollHeight;
+            }
+        }
+
+        // Simple map initialization
+        let map;
+        
+        function initMap() {
+            debugLog('🗺️ Initializing Google Maps...');
+            
+            try {
+                map = new google.maps.Map(document.getElementById("map"), {
+                    center: { lat: 27.9306, lng: -82.4497 }, // Davis Islands, Tampa
+                    zoom: 17,
+                    mapTypeId: google.maps.MapTypeId.SATELLITE
+                });
+                
+                debugLog('✅ Google Maps initialized successfully');
+                
+                // Add click listener
+                map.addListener('click', function(e) {
+                    debugLog('📍 Map clicked at: ' + e.latLng.lat() + ', ' + e.latLng.lng());
+                });
+                
+                // Set up search button
+                const searchBtn = document.getElementById('searchButton');
+                if (searchBtn) {
+                    searchBtn.addEventListener('click', testGeocode);
+                }
+                
+                debugLog('🎯 Event listeners attached');
+                
+            } catch (error) {
+                debugLog('❌ Error initializing map: ' + error.message);
+            }
+        }
+
+        // Test geocoding function
+        async function testGeocode() {
+            const addressInput = document.getElementById('addressInput');
+            if (!addressInput || !addressInput.value.trim()) {
+                debugLog('⚠️ No address entered');
+                return;
+            }
+
+            const address = addressInput.value.trim();
+            debugLog('🔍 Testing geocoding for: ' + address);
+
+            try {
+                const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=YOUR_API_KEY`;
+                debugLog('📡 Geocoding URL: ' + geocodeUrl.substring(0, 100) + '...');
+                
+                const response = await fetch(geocodeUrl);
+                debugLog('📥 Geocoding response status: ' + response.status);
+                
+                const data = await response.json();
+                debugLog('📊 Geocoding response: ' + JSON.stringify(data, null, 2).substring(0, 200) + '...');
+                
+                if (data.status === "OK" && data.results.length > 0) {
+                    const location = data.results[0].geometry.location;
+                    debugLog('✅ Geocoding successful: ' + location.lat + ', ' + location.lng);
+                    
+                    // Update map
+                    map.setCenter(location);
+                    map.setZoom(20);
+                    
+                    // Add marker
+                    new google.maps.Marker({
+                        position: location,
+                        map: map,
+                        title: address
+                    });
+                    
+                    debugLog('🗺️ Map updated with location');
+                    
+                } else {
+                    debugLog('❌ Geocoding failed: ' + data.status);
+                }
+
+            } catch (error) {
+                debugLog('💥 Geocoding error: ' + error.message);
+            }
+        }
+
+        // Check if Google Maps is loaded
+        window.addEventListener('load', function() {
+            if (typeof google === 'undefined') {
+                debugLog('❌ Google Maps API not loaded');
+            } else {
+                debugLog('✅ Google Maps API is available');
+            }
+        });
+
+        debugLog('📝 Debug script loaded');
+    </script>
+
+    <!-- Load Google Maps -->
+    <script async defer 
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places,geometry&callback=initMap"
+        onerror="debugLog('❌ Failed to load Google Maps API')">
+    </script>
+</body>
+</html>

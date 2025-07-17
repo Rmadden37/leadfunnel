@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detailed Flux Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .log { background: #f5f5f5; padding: 10px; border-radius: 3px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+        .button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        .button:hover { background: #45a049; }
+        .status { margin: 10px 0; font-weight: bold; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>Detailed Flux Debug Tool</h1>
+    
+    <div class="section">
+        <h3>1. Test Davis Islands Data Layers API</h3>
+        <button class="button" onclick="testDataLayers()">Test Data Layers</button>
+        <div id="dataStatus" class="status"></div>
+        <div id="dataLog" class="log"></div>
+    </div>
+    
+    <div class="section">
+        <h3>2. Test Different Locations</h3>
+        <input type="text" id="testAddress" placeholder="Enter address to test" style="width: 300px; padding: 8px; margin-right: 10px;">
+        <button class="button" onclick="testCustomAddress()">Test Address</button>
+        <div id="customStatus" class="status"></div>
+        <div id="customLog" class="log"></div>
+    </div>
+
+    <script>
+        const API_KEY = 'AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk';
+
+        function log(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            container.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function setStatus(statusId, message, type = 'info') {
+            const status = document.getElementById(statusId);
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            status.innerHTML = `<span class="${className}">${message}</span>`;
+        }
+
+        async function testDataLayers() {
+            const lat = 27.9306;
+            const lng = -82.4497;
+            
+            log('dataLog', `Testing Data Layers API for Davis Islands: ${lat}, ${lng}`);
+            setStatus('dataStatus', 'Testing...');
+            
+            try {
+                // Test with different parameters to see what works
+                const configs = [
+                    { radiusMeters: 100, pixelSizeMeters: 0.5, view: 'FULL_LAYERS' },
+                    { radiusMeters: 50, pixelSizeMeters: 1, view: 'FULL_LAYERS' },
+                    { radiusMeters: 200, pixelSizeMeters: 0.25, view: 'FULL_LAYERS' },
+                    { radiusMeters: 100, pixelSizeMeters: 0.5, view: 'DSM_LAYER' }
+                ];
+                
+                for (let i = 0; i < configs.length; i++) {
+                    const config = configs[i];
+                    log('dataLog', `\n--- Test ${i + 1}: radius=${config.radiusMeters}m, pixel=${config.pixelSizeMeters}m, view=${config.view} ---`);
+                    
+                    const url = `https://solar.googleapis.com/v1/dataLayers:get?location.latitude=${lat}&location.longitude=${lng}&radiusMeters=${config.radiusMeters}&view=${config.view}&requiredQuality=HIGH&pixelSizeMeters=${config.pixelSizeMeters}&key=${API_KEY}`;
+                    
+                    const response = await fetch(url);
+                    log('dataLog', `Response: ${response.status} ${response.statusText}`);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        log('dataLog', `Keys: ${Object.keys(data).join(', ')}`);
+                        
+                        // Check for flux URLs
+                        const fluxKeys = Object.keys(data).filter(key => key.toLowerCase().includes('flux'));
+                        const urlKeys = Object.keys(data).filter(key => key.toLowerCase().includes('url'));
+                        
+                        log('dataLog', `Flux keys: ${fluxKeys.join(', ') || 'NONE'}`);
+                        log('dataLog', `URL keys: ${urlKeys.join(', ') || 'NONE'}`);
+                        
+                        if (data.annualFluxUrl) {
+                            log('dataLog', `✅ Found annualFluxUrl: ${data.annualFluxUrl}`, 'success');
+                            
+                            // Test if the URL is accessible
+                            try {
+                                const fluxUrlWithKey = `${data.annualFluxUrl}&key=${API_KEY}`;
+                                const fluxTest = await fetch(fluxUrlWithKey, { method: 'HEAD' });
+                                log('dataLog', `Flux URL test: ${fluxTest.status} ${fluxTest.statusText}`, fluxTest.ok ? 'success' : 'error');
+                                if (fluxTest.ok) {
+                                    log('dataLog', `Content-Type: ${fluxTest.headers.get('content-type')}`);
+                                    log('dataLog', `Content-Length: ${fluxTest.headers.get('content-length')} bytes`);
+                                }
+                            } catch (urlError) {
+                                log('dataLog', `Flux URL access error: ${urlError.message}`, 'error');
+                            }
+                        }
+                        
+                        if (data.dsmBounds || data.imageryBounds) {
+                            const bounds = data.dsmBounds || data.imageryBounds;
+                            log('dataLog', `✅ Found bounds: SW(${bounds.sw.latitude}, ${bounds.sw.longitude}) NE(${bounds.ne.latitude}, ${bounds.ne.longitude})`, 'success');
+                        }
+                        
+                        // Show first successful config
+                        if (data.annualFluxUrl && (data.dsmBounds || data.imageryBounds)) {
+                            setStatus('dataStatus', `Success with config ${i + 1}!`, 'success');
+                            log('dataLog', `\n🎉 WORKING CONFIG FOUND: ${JSON.stringify(config)}`, 'success');
+                            break;
+                        }
+                        
+                    } else {
+                        const errorText = await response.text();
+                        log('dataLog', `Error: ${errorText}`, 'error');
+                    }
+                    
+                    // Small delay between requests
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                
+            } catch (error) {
+                log('dataLog', `Error: ${error.message}`, 'error');
+                setStatus('dataStatus', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testCustomAddress() {
+            const addressInput = document.getElementById('testAddress');
+            const address = addressInput.value.trim();
+            
+            if (!address) {
+                alert('Please enter an address');
+                return;
+            }
+            
+            log('customLog', `Testing address: ${address}`);
+            setStatus('customStatus', 'Geocoding...');
+            
+            try {
+                // First geocode
+                const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${API_KEY}`;
+                const geocodeResponse = await fetch(geocodeUrl);
+                
+                if (!geocodeResponse.ok) {
+                    throw new Error(`Geocoding failed: ${geocodeResponse.status}`);
+                }
+                
+                const geocodeData = await geocodeResponse.json();
+                if (geocodeData.status !== 'OK' || !geocodeData.results.length) {
+                    throw new Error(`No results for address: ${address}`);
+                }
+                
+                const location = geocodeData.results[0].geometry.location;
+                log('customLog', `Geocoded to: ${location.lat}, ${location.lng}`);
+                
+                // Test data layers for this location
+                setStatus('customStatus', 'Testing Solar API...');
+                
+                const url = `https://solar.googleapis.com/v1/dataLayers:get?location.latitude=${location.lat}&location.longitude=${location.lng}&radiusMeters=100&view=FULL_LAYERS&requiredQuality=HIGH&pixelSizeMeters=0.5&key=${API_KEY}`;
+                
+                const response = await fetch(url);
+                log('customLog', `Data Layers Response: ${response.status} ${response.statusText}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('customLog', `Response keys: ${Object.keys(data).join(', ')}`);
+                    
+                    if (data.annualFluxUrl) {
+                        log('customLog', `✅ Has flux URL!`, 'success');
+                        setStatus('customStatus', 'Success - flux data available!', 'success');
+                    } else {
+                        log('customLog', `❌ No flux URL found`, 'warning');
+                        setStatus('customStatus', 'No flux data for this location', 'warning');
+                    }
+                    
+                    log('customLog', `Full response:\n${JSON.stringify(data, null, 2)}`);
+                } else {
+                    const errorText = await response.text();
+                    log('customLog', `Error: ${errorText}`, 'error');
+                    setStatus('customStatus', `Solar API Error: ${response.status}`, 'error');
+                }
+                
+            } catch (error) {
+                log('customLog', `Error: ${error.message}`, 'error');
+                setStatus('customStatus', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize with Davis Islands
+        window.onload = function() {
+            document.getElementById('testAddress').value = 'Davis Islands, Tampa, FL';
+        };
+    </script>
+</body>
+</html>

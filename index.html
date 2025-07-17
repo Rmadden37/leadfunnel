@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Florida Solar Analysis - See Your Savings Potential</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Mobile-width container -->
+<div class="max-w-md mx-auto shadow-2xl pb-20">
+  <!-- Added padding-bottom for floating banner -->
+  <!-- Hero Section -->
+  <header class="hero-bg text-white">
+    <div class="container mx-auto px-6 pt-16 pb-32 text-center">
+      <h1
+        class="text-5xl md:text-6xl font-black leading-tight tracking-tight mb-4 hero-text-shadow"
+      >
+        Florida energy costs are up
+        <span class="text-yellow-300">64%</span> over the last 5 years!
+      </h1>
+    </div>
+  </header>
+
+  <main>
+    <!-- Section 1: Form & Trust -->
+    <div class="bg-white py-16">
+      <div class="container mx-auto px-6">
+        <!-- CTA Form Section -->
+        <div
+          id="form-section"
+          class="form-card bg-white rounded-lg p-8 md:p-10 max-w-2xl mx-auto -mt-48"
+        >
+          <div id="initial-step">
+            <h2
+              class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-2"
+            >
+              See Your Home's Solar Potential
+            </h2>
+            <p class="text-center text-gray-600 mb-6">
+              Enter your address to get a free, instant analysis of your
+              rooftop.
+            </p>
+            
+            <!-- Solar Analysis Map and Input -->
+            <div class="space-y-4">
+              <input
+                type="text"
+                id="addressInput"
+                name="address"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="Start typing your address..."
+                required
+              />
+              <button
+                type="button"
+                id="searchButton"
+                class="main-cta-button w-full text-white font-bold text-lg py-4 px-6 rounded-lg shadow-lg active:scale-95"
+              >
+                Analyze Solar Potential →
+              </button>
+            </div>
+            
+            <!-- Google Map Container -->
+            <div id="map" class="w-full h-64 rounded-lg mb-6 bg-gray-200 border border-gray-300"></div>
+            
+            <!-- Solar Information Panel -->
+            <div id="solarInfo" class="mb-6">
+              <div id="insightsDetail" class="bg-white rounded-lg border border-gray-200 p-4">
+                <!-- Solar insights will be displayed here -->
+              </div>
+            </div>
+            
+            <button
+              type="button"
+              id="analyze-roof-btn"
+              class="main-cta-button w-full text-white font-bold text-lg py-4 px-6 rounded-lg mt-6 shadow-lg active:scale-95"
+            >
+              Reveal My Savings →
+            </button>
+          </div>
+
+          <div id="results-step" class="hidden">
+            <div id="analysis-results" class="mb-6">
+              <!-- Map and Savings content will be injected here -->
+            </div>
+            <form id="lead-form" class="hidden">
+              <h3 class="text-xl font-bold text-center text-gray-800 mb-4">
+                Complete Your Request to Lock In Your Rate
+              </h3>
+              <div class="space-y-4">
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Full Name"
+                  required
+                />
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Email Address"
+                  required
+                />
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Phone Number"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                class="cta-button w-full bg-yellow-500 text-blue-900 font-bold text-lg py-4 px-6 rounded-lg mt-6 hover:bg-yellow-400"
+              >
+                Lock In My Rate Before Prices Rise →
+              </button>
+              <p class="text-xs text-gray-500 text-center mt-3">
+                One of our specialists will contact you with an official quote.
+              </p>
+            </form>
+            
+            <!-- Consultation Section -->
+            <div id="consultation-section" class="hidden mt-6">
+              <div class="text-center p-6 bg-green-50 rounded-lg border border-green-200">
+                <h3 class="text-xl font-bold text-green-800 mb-2">🎉 Great Solar Potential!</h3>
+                <p class="text-gray-700 mb-4">Your roof shows excellent potential for solar savings. Ready to take the next step?</p>
+                <button
+                  type="button"
+                  id="book-consultation-btn"
+                  class="cta-button bg-green-600 text-white font-bold text-lg py-3 px-6 rounded-lg hover:bg-green-700"
+                >
+                  Get Detailed Analysis →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trust Block -->
+        <div class="max-w-4xl mx-auto mt-16 text-center">
+          <div class="grid grid-cols-2 gap-8 text-gray-700">
+            <div class="flex flex-col items-center">
+              <svg
+                class="w-12 h-12 text-blue-600 mb-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+              </svg>
+              <p class="font-semibold">Freedom Forever Certified Installer</p>
+            </div>
+            <div class="flex flex-col items-center">
+              <svg
+                class="w-12 h-12 text-blue-600 mb-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                ></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                ></path>
+              </svg>
+              <p class="font-semibold">Serving Tampa Bay & Neighboring Areas</p>
+            </div>
+            <div class="flex flex-col items-center">
+              <svg
+                class="w-12 h-12 text-blue-600 mb-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+              </svg>
+              <p class="font-semibold">25-Year Warranty on Equipment</p>
+            </div>
+            <div class="flex flex-col items-center">
+              <svg
+                class="w-12 h-12 text-blue-600 mb-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                ></path>
+              </svg>
+              <p class="font-semibold">Over 2,000 Florida Home Installs</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Chart -->
+    <div class="bg-gray-50 py-16">
+      <div class="container mx-auto px-6 text-center">
+        <h2
+          class="text-3xl font-bold text-gray-900 mb-4 tracking-tight relative pb-2"
+        >
+          Power Costs Are Scheduled To Increase In The Future
+          <span
+            class="absolute bottom-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-indigo-600 rounded"
+          ></span>
+        </h2>
+        <img
+          src="https://i.imgur.com/ZSO5q0h.png"
+          alt="A graph showing the average electric bill from TECO, Duke Energy, and FPL rising from 2020 to 2025."
+          class="rounded-lg shadow-xl mt-8"
+        />
+        <a
+          href="#form-section"
+          class="inline-block bg-indigo-600 text-white font-bold text-lg py-3 px-8 rounded-full shadow-lg hover:bg-indigo-700 transition-transform transform hover:-translate-y-1 mt-8"
+        >
+          Protect yourself from future rate hikes
+        </a>
+      </div>
+    </div>
+
+    <!-- Section 3: Value Stack -->
+    <div class="bg-white py-16">
+      <div class="container mx-auto px-6">
+        <div
+          class="bg-white rounded-lg p-8 md:p-12 max-w-4xl mx-auto text-center"
+        >
+          <h2 class="text-3xl font-bold text-gray-800 mb-4">
+            The Process is Simple & The Value is Clear
+          </h2>
+          <p class="text-gray-700 leading-relaxed max-w-2xl mx-auto mb-12">
+            An expiring federal program allows you to swap your rising energy
+            payment for a lower, fixed payment that you own. We handle
+            everything. Here's exactly what's included:
+          </p>
+
+          <div class="space-y-4">
+            <!-- Benefit Card 1 -->
+            <div
+              class="bg-blue-50 border border-blue-200 rounded-lg p-6 flex items-center space-x-4 text-left"
+            >
+              <div class="flex-shrink-0 bg-yellow-400 p-3 rounded-full">
+                <svg
+                  class="w-6 h-6 text-yellow-800"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-bold text-lg text-gray-800">
+                  Expiring Federal Program
+                </h4>
+                <p class="text-gray-600">
+                  Lock in today's lower costs before the federal subsidy ends.
+                </p>
+              </div>
+            </div>
+            <!-- Benefit Card 2 -->
+            <div
+              class="bg-blue-50 border border-blue-200 rounded-lg p-6 flex items-center space-x-4 text-left"
+            >
+              <div class="flex-shrink-0 bg-green-400 p-3 rounded-full">
+                <svg
+                  class="w-6 h-6 text-green-800"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-bold text-lg text-gray-800">
+                  $0 Down Installation
+                </h4>
+                <p class="text-gray-600">
+                  Get a full-service installation with no upfront cost.
+                </p>
+              </div>
+            </div>
+            <!-- Benefit Card 3 -->
+            <div
+              class="bg-blue-50 border border-blue-200 rounded-lg p-6 flex items-center space-x-4 text-left"
+            >
+              <div class="flex-shrink-0 bg-indigo-400 p-3 rounded-full">
+                <svg
+                  class="w-6 h-6 text-indigo-800"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  ></path>
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-bold text-lg text-gray-800">
+                  25-Year Warranty
+                </h4>
+                <p class="text-gray-600">
+                  Your entire system is covered, bumper-to-bumper.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Testimonial -->
+    <div class="bg-gray-50 py-16">
+      <div class="container mx-auto px-6 text-center">
+        <div class="max-w-3xl mx-auto">
+          <div class="bg-blue-600 text-white rounded-lg p-10 shadow-lg">
+            <p class="text-3xl italic leading-relaxed">
+              “I locked in my rate just in time. My energy bill used to be $280
+              a month. Now it’s under $30, and I didn’t pay a penny up front.”
+            </p>
+            <p class="mt-6 font-bold text-yellow-400 text-lg">
+              – Dave M., Clearwater FL
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Hurricane -->
+    <div class="bg-white py-16">
+      <div class="container mx-auto px-6">
+        <div
+          class="rounded-lg shadow-lg p-8 md:p-12 max-w-4xl mx-auto border-l-4 border-red-500"
+        >
+          <h3 class="text-4xl font-bold text-gray-800 mb-4">
+            🌀 Don't Get Caught in the Dark
+          </h3>
+          <p class="text-gray-700 leading-relaxed mb-6">
+            As seen on 10 Tampa Bay, generators often fail during hurricanes,
+            leaving families without power. A solar battery backup is a more
+            reliable solution.
+          </p>
+          <div
+            class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-xl"
+          >
+            <iframe
+              src="https://www.youtube.com/embed/PLaZg5Lg214?si=yqS6e7j_Z8zXQ-rC"
+              title="YouTube video player"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: FAQ -->
+    <div class="bg-gray-50 py-16">
+      <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+          <h3 class="text-4xl font-bold text-center text-gray-800 mb-10">
+            Frequently Asked Questions
+          </h3>
+          <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+            <div id="faq-list">
+              <div class="faq-item py-4">
+                <h4 class="text-lg font-semibold text-gray-800 mb-2">
+                  Q: What happens if I miss the 2025 deadline?
+                </h4>
+                <p class="text-gray-600">
+                  A: You will likely face higher installation costs. Homeowners
+                  who act now are locking in today's lower prices made possible
+                  by the current federal program.
+                </p>
+              </div>
+              <div class="faq-item py-4">
+                <h4 class="text-lg font-semibold text-gray-800 mb-2">
+                  Q: What happens if I sell my house?
+                </h4>
+                <p class="text-gray-600">
+                  A: The system transfers to the next homeowner or gets paid off
+                  at closing — simple and clean.
+                </p>
+              </div>
+              <div class="faq-item py-4">
+                <h4 class="text-lg font-semibold text-gray-800 mb-2">
+                  Q: What if there’s a storm or blackout?
+                </h4>
+                <p class="text-gray-600">
+                  A: With a battery added, your home stays powered even when the
+                  grid fails.
+                </p>
+              </div>
+              <div class="faq-item pt-4 pb-4">
+                <h4 class="text-lg font-semibold text-gray-800 mb-2">
+                  Q: Is this a lease or a loan?
+                </h4>
+                <p class="text-gray-600">
+                  A: Most use a loan to own the system — but we’ll walk you
+                  through the best option for your home.
+                </p>
+              </div>
+            </div>
+            <!-- AI FAQ Input -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+              <label
+                for="ai-faq-question"
+                class="block text-lg font-semibold text-gray-800 mb-2"
+                >Have another question?</label
+              >
+              <div class="flex gap-2">
+                <input
+                  type="text"
+                  id="ai-faq-question"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Type your question here..."
+                />
+                <button
+                  type="button"
+                  id="ask-ai-btn"
+                  class="bg-indigo-600 text-white font-bold py-3 px-5 rounded-lg hover:bg-indigo-700 transition-colors"
+                >
+                  ✨ Ask
+                </button>
+              </div>
+              <div id="ai-faq-response" class="mt-4"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Final CTA -->
+    <div class="bg-white py-16">
+      <div class="container mx-auto px-6">
+        <div
+          class="text-center bg-white py-16 rounded-lg shadow-lg border-t-4 border-yellow-500"
+        >
+          <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">
+              Your Last Chance to Lock In 2025 Rates.
+            </h2>
+            <p class="text-gray-700 max-w-2xl mx-auto mb-8 text-lg">
+              Once the federal program expires, the cost of solar will go up.
+              Get your free analysis to secure today's pricing.
+            </p>
+            <a
+              href="#form-section"
+              class="cta-button inline-block bg-yellow-500 text-blue-900 font-bold text-xl py-4 px-8 rounded-lg hover:bg-yellow-400"
+            >
+              Reveal My Savings →
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-gray-400 text-sm text-center py-8">
+    <div class="container mx-auto px-6">
+      <p>
+        Freedom Forever Authorized Dealer | Not affiliated with TECO | Subject
+        to credit and roof approval | A key federal solar incentive is scheduled
+        to change after 2025; consult a tax professional.
+      </p>
+      <p class="mt-2">
+        <a href="#" class="underline hover:text-white">Privacy Policy</a>
+      </p>
+    </div>
+  </footer>
+</div>
+
+<!-- Floating Urgency Banner -->
+<div
+  class="floating-banner fixed bottom-0 left-0 right-0 bg-red-800 text-white p-2 shadow-2xl z-50"
+>
+  <div class="max-w-md mx-auto flex items-center justify-center text-center">
+    <p class="text-sm font-semibold">
+      30% Federal Program Ends in
+      <span id="days-remaining" class="font-bold text-yellow-300">--</span>
+      Days!
+    </p>
+  </div>
+</div>
+
+<!-- External Libraries -->
+<script src="https://unpkg.com/geotiff@2.0.7/dist/geotiff.min.js"></script>
+
+<!-- Solar Maps Implementation (loaded before Google Maps) -->
+<script src="solar_maps.js"></script>
+
+<!-- Google Maps JavaScript API with Places and Geometry libraries -->
+<script async defer 
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk&libraries=places,geometry&callback=initMap">
+</script>
+
+<!-- Original Animation Script -->
+<script src="animation.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Analysis Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        #addressInput {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        #searchButton {
+            width: 25%;
+            padding: 10px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        #searchButton:hover {
+            background: #3367d6;
+        }
+        #map {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        #solarInfo {
+            position: relative;
+        }
+        #solarInfo.loading {
+            opacity: 0.7;
+        }
+        #insightsDetail {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .metric-card {
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+        }
+        .blue { background: #e3f2fd; color: #1976d2; }
+        .green { background: #e8f5e8; color: #388e3c; }
+        .yellow { background: #fff8e1; color: #f57c00; }
+        .purple { background: #f3e5f5; color: #7b1fa2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Solar Potential Analysis Test</h1>
+        <p>Enter an address to analyze rooftop solar potential with visual heatmap overlay.</p>
+        
+        <div class="input-group">
+            <input type="text" id="addressInput" placeholder="Enter your address (e.g., 1600 Amphitheatre Parkway, Mountain View, CA)" />
+            <button id="searchButton">Analyze</button>
+        </div>
+        
+        <div id="map"></div>
+        
+        <div id="solarInfo">
+            <div id="insightsDetail">
+                <p>Enter an address above to begin solar analysis.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/geotiff@2.0.7/dist/geotiff.min.js"></script>
+    
+    <!-- Google Maps JavaScript API -->
+    <script async defer 
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk&libraries=places,geometry&callback=initMap">
+    </script>
+    
+    <!-- Solar Maps Implementation -->
+    <script src="solar_maps.js"></script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #e5e7eb; /* Main page background */
+        }
+        .hero-bg {
+            /* Adjusted gradient to be slightly less dark at the top */
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), linear-gradient(to bottom, #0c4a6e, #1d4ed8);
+        }
+        .hero-text-shadow {
+            /* Added drop shadow for hero text */
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        .cta-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(255, 193, 7, 0.4);
+        }
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(255, 193, 7, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .main-cta-button {
+            background: linear-gradient(to bottom, #4f46e5, #4338ca);
+            transition: all 0.2s ease-in-out;
+        }
+        .main-cta-button:hover {
+            box-shadow: 0 8px 25px -5px rgba(79, 70, 229, 0.5), 0 10px 10px -5px rgba(79, 70, 229, 0.1);
+            transform: translateY(-2px);
+        }
+        .faq-item {
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .spinner {
+            border-top-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        #map {
+            height: 250px;
+            border-radius: 0.5rem;
+        }
+        .form-card {
+            /* Enhanced shadow for more depth */
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        .floating-banner {
+            animation: slide-up 0.5s 0.5s ease-out forwards;
+            transform: translateY(100%);
+        }
+        @keyframes slide-up {
+            to {
+                transform: translateY(0);
+            }
+        }
+        /* Style for Google Places Autocomplete dropdown */
+        .pac-container {
+            background-color: #FFF;
+            z-index: 1000;
+            position: fixed;
+            display: inline-block;
+            float: left;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .pac-item {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .pac-item:hover {
+            background-color: #f0f4f8;
+        }
+        .pac-item-query {
+            font-size: 16px;
+        }
+
+        /* Solar Analysis Styles */
+        #solarInfo.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        #solarInfo.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .solar-insights {
+            position: relative;
+        }
+        
+        .solar-insights .grid {
+            gap: 1rem;
+        }
+        
+        /* Map container styles */
+        #map {
+            min-height: 300px;
+        }
+        
+        /* Responsive map adjustments */
+        @media (max-width: 768px) {
+            #map {
+                height: 250px;
+            }
+        }
+
+        /* Solar Analysis Metric Cards */
+        .metric-card {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+        
+        .metric-card.blue { 
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb); 
+            color: #1976d2; 
+        }
+        
+        .metric-card.green { 
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9); 
+            color: #388e3c; 
+        }
+        
+        .metric-card.yellow { 
+            background: linear-gradient(135deg, #fff8e1, #ffecb3); 
+            color: #f57c00; 
+        }
+        
+        .metric-card.purple { 
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7); 
+            color: #7b1fa2; 
+        }
+
+        /* Panel configuration styles */
+        .panel-config {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .panel-config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .panel-config-details {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }

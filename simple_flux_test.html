@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Flux Overlay Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.7/dist-browser/geotiff.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        #map { height: 70vh; width: 100%; }
+        #controls { padding: 20px; background: #f5f5f5; }
+        .log { margin-top: 10px; padding: 10px; background: white; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <h3>Simple Flux Overlay Test</h3>
+        <button onclick="testFluxOverlay()">Test Flux Overlay</button>
+        <button onclick="clearOverlay()">Clear Overlay</button>
+        <div id="log" class="log">Ready to test...</div>
+    </div>
+    <div id="map"></div>
+
+    <script>
+        const API_KEY = 'AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk';
+        let map;
+        let currentOverlay = null;
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        // Simple GeoTIFF Overlay Class (simplified for debugging)
+        class SimpleGeoTIFFOverlay extends google.maps.OverlayView {
+            constructor(map, geotiffUrl, bounds) {
+                super();
+                this.map = map;
+                this.geotiffUrl = geotiffUrl;
+                this.bounds_ = bounds;
+                this.canvas = null;
+                this.imageData = null;
+                this.setMap(map);
+                log("GeoTIFF overlay created");
+            }
+
+            onAdd() {
+                log("onAdd called");
+                this.canvas = document.createElement('canvas');
+                this.canvas.style.position = 'absolute';
+                this.canvas.style.pointerEvents = 'none';
+                this.canvas.style.border = '2px solid red'; // Debug border
+                
+                const panes = this.getPanes();
+                panes.overlayLayer.appendChild(this.canvas);
+                log("Canvas added to overlay layer");
+                
+                this.loadGeoTIFF();
+            }
+
+            async loadGeoTIFF() {
+                try {
+                    log(`Loading GeoTIFF from: ${this.geotiffUrl}`);
+                    
+                    const tiff = await GeoTIFF.fromUrl(this.geotiffUrl);
+                    log("GeoTIFF loaded successfully");
+                    
+                    const image = await tiff.getImage();
+                    const width = image.getWidth();
+                    const height = image.getHeight();
+                    log(`GeoTIFF dimensions: ${width} x ${height}`);
+                    
+                    const rasters = await image.readRasters({ interleave: false, samples: [0] });
+                    this.imageData = rasters[0];
+                    this.imageWidth = width;
+                    this.imageHeight = height;
+                    
+                    let validPixels = 0;
+                    let minVal = Infinity;
+                    let maxVal = -Infinity;
+                    
+                    for (let i = 0; i < this.imageData.length; i++) {
+                        const val = this.imageData[i];
+                        if (val > 0) {
+                            validPixels++;
+                            minVal = Math.min(minVal, val);
+                            maxVal = Math.max(maxVal, val);
+                        }
+                    }
+                    
+                    log(`Valid pixels: ${validPixels}, Range: ${minVal} - ${maxVal}`);
+                    
+                    this.draw();
+                } catch (error) {
+                    log(`Error loading GeoTIFF: ${error.message}`);
+                }
+            }
+
+            draw() {
+                log("draw() called");
+                if (!this.canvas || !this.imageData) {
+                    log("Missing canvas or image data");
+                    return;
+                }
+                
+                const projection = this.getProjection();
+                if (!projection) {
+                    log("No projection available");
+                    return;
+                }
+                
+                log("Rendering canvas...");
+                
+                const sw = projection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
+                const ne = projection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
+                
+                const width = Math.abs(ne.x - sw.x);
+                const height = Math.abs(sw.y - ne.y);
+                
+                log(`Canvas position: ${sw.x}, ${ne.y}, Size: ${width}x${height}`);
+                
+                this.canvas.style.left = Math.min(sw.x, ne.x) + 'px';
+                this.canvas.style.top = Math.min(sw.y, ne.y) + 'px';
+                this.canvas.style.width = width + 'px';
+                this.canvas.style.height = height + 'px';
+                this.canvas.width = width;
+                this.canvas.height = height;
+                
+                const ctx = this.canvas.getContext('2d');
+                
+                // For debugging: fill with semi-transparent red to see if canvas is positioned correctly
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Add a border for debugging
+                ctx.strokeStyle = 'rgba(0, 255, 0, 0.8)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(1, 1, width-2, height-2);
+                
+                log("Canvas filled with debug color and border - overlay should be visible");
+            }
+
+            onRemove() {
+                if (this.canvas) {
+                    this.canvas.parentNode.removeChild(this.canvas);
+                    this.canvas = null;
+                }
+                log("Overlay removed");
+            }
+        }
+
+        // Initialize Google Maps
+        function initMap() {
+            // Davis Islands coordinates
+            const davisIslands = { lat: 27.9306, lng: -82.4497 };
+            
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 18,
+                center: davisIslands,
+                mapTypeId: 'satellite',
+                tilt: 0, // Force 2D mode
+                heading: 0, // No rotation
+                rotateControl: false, // Disable rotation controls
+                gestureHandling: 'greedy'
+            });
+            
+            log("Map initialized in 2D mode");
+        }
+
+        async function testFluxOverlay() {
+            if (!map) {
+                log("Map not initialized");
+                return;
+            }
+            
+            clearOverlay();
+            
+            try {
+                log("Getting Solar API data...");
+                
+                const lat = 27.9306;
+                const lng = -82.4497;
+                const url = `https://solar.googleapis.com/v1/dataLayers:get?location.latitude=${lat}&location.longitude=${lng}&radiusMeters=100&view=FULL_LAYERS&requiredQuality=HIGH&pixelSizeMeters=0.5&key=${API_KEY}`;
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                log("Solar API response received");
+                log(`Response keys: ${Object.keys(data).join(', ')}`);
+                
+                let fluxUrl = data.annualFluxUrl;
+                let bounds = data.dsmBounds;
+                
+                if (!fluxUrl) {
+                    log("No annualFluxUrl found");
+                    return;
+                }
+                
+                if (!bounds) {
+                    log("No bounds found, creating default bounds");
+                    bounds = {
+                        sw: { latitude: lat - 0.001, longitude: lng - 0.001 },
+                        ne: { latitude: lat + 0.001, longitude: lng + 0.001 }
+                    };
+                }
+                
+                log(`Flux URL: ${fluxUrl}`);
+                log(`Bounds: SW(${bounds.sw.latitude}, ${bounds.sw.longitude}) NE(${bounds.ne.latitude}, ${bounds.ne.longitude})`);
+                
+                const urlWithKey = `${fluxUrl}&key=${API_KEY}`;
+                
+                const mapBounds = new google.maps.LatLngBounds(
+                    new google.maps.LatLng(bounds.sw.latitude, bounds.sw.longitude),
+                    new google.maps.LatLng(bounds.ne.latitude, bounds.ne.longitude)
+                );
+                
+                currentOverlay = new SimpleGeoTIFFOverlay(map, urlWithKey, mapBounds);
+                
+            } catch (error) {
+                log(`Error: ${error.message}`);
+            }
+        }
+
+        function clearOverlay() {
+            if (currentOverlay) {
+                currentOverlay.setMap(null);
+                currentOverlay = null;
+                log("Overlay cleared");
+            }
+        }
+
+        // Make initMap available globally
+        window.initMap = initMap;
+    </script>
+    
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk&callback=initMap">
+    </script>
+</body>
+</html>
