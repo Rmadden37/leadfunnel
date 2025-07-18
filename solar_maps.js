@@ -148,7 +148,15 @@ async function getSolarDataLayers(lat, lng) {
 
 // Enhanced function to create real flux overlay with proper error handling
 async function createRealFluxOverlay(dataLayersData, location) {
-    console.log("🔄 Creating real flux overlay...");
+            console.log("🔄 Creating real flux overlay...");
+        console.log("📊 Flux URL found:", fluxUrl.substring(0, 80) + "...");
+        
+        // Log the exact proxy URL for manual testing
+        const fluxUrlWithKey = fluxUrl.includes('key=') ? fluxUrl : `${fluxUrl}&key=AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk`;
+        const proxiedUrl = `${PROXY_BASE_URL}/api/geotiff-proxy?url=${encodeURIComponent(fluxUrlWithKey)}`;
+        
+        console.log("🔗 Test this URL manually:", proxiedUrl);
+        console.log("💡 Copy the URL above and paste it in a new browser tab to test the proxy");
     
     try {
         // Get the flux URL
@@ -242,24 +250,60 @@ async function createRealFluxOverlay(dataLayersData, location) {
             fluxOverlay.setMap(null);
         }
         
-        // Create GroundOverlay with enhanced visibility
+        // Create GroundOverlay with enhanced visibility and debugging
         fluxOverlay = new google.maps.GroundOverlay(
             proxiedUrl,
             mapBounds,
             {
-                opacity: 0.9, // Increased from 0.75 for more vivid colors
+                opacity: 0.9, // High opacity for visibility
                 clickable: false
             }
         );
         
-        // Set up error handling for the overlay
+        // Add comprehensive error handling and debugging
         fluxOverlay.addListener('error', function(error) {
-            console.error('GroundOverlay error:', error);
-            throw new Error('Overlay failed to load');
+            console.error('🚨 GroundOverlay ERROR:', error);
         });
+        
+        // Test if the overlay loads successfully
+        let overlayLoaded = false;
+        fluxOverlay.addListener('idle', function() {
+            overlayLoaded = true;
+            console.log('✅ GroundOverlay loaded successfully!');
+        });
+        
+        // Check if overlay fails to load after 10 seconds
+        setTimeout(() => {
+            if (!overlayLoaded) {
+                console.log('⚠️ Overlay may have failed to load - testing URL directly...');
+                
+                // Test the proxied URL directly
+                fetch(proxiedUrl)
+                    .then(response => {
+                        console.log('Direct URL test result:', response.status, response.statusText);
+                        console.log('Content-Type:', response.headers.get('content-type'));
+                        console.log('Content-Length:', response.headers.get('content-length'));
+                        
+                        if (!response.ok) {
+                            console.error('❌ Proxied URL is not accessible:', response.status);
+                        } else {
+                            console.log('✅ Proxied URL is accessible - may be a bounds issue');
+                            console.log('🗺️ Check if overlay bounds match building location');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('❌ Direct URL test failed:', error);
+                    });
+            }
+        }, 10000);
         
         // Add the overlay to the map
         fluxOverlay.setMap(map);
+        
+        console.log('🎯 GroundOverlay created with:');
+        console.log('  URL:', proxiedUrl);
+        console.log('  Bounds:', mapBounds.toString());
+        console.log('  Opacity:', 0.9);
         
         // Fit map to show the overlay area with some padding
         const extendedBounds = new google.maps.LatLngBounds();
