@@ -237,24 +237,6 @@ async function createRealFluxOverlay(dataLayersData, location) {
             new google.maps.LatLng(bounds.ne.latitude, bounds.ne.longitude)
         );
         
-        // DEBUG: Add a temporary rectangle to show where overlay should appear
-        const debugRect = new google.maps.Rectangle({
-            bounds: mapBounds,
-            strokeColor: '#00FF00',
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: '#00FF00',
-            fillOpacity: 0.1
-        });
-        debugRect.setMap(map);
-        
-        // Remove debug rectangle after 5 seconds
-        setTimeout(() => {
-            debugRect.setMap(null);
-        }, 5000);
-        
-        console.log("🟢 Green debug rectangle shows where overlay should appear (5 seconds)");
-        
         // Remove any existing overlay
         if (fluxOverlay) {
             fluxOverlay.setMap(null);
