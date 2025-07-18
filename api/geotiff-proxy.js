@@ -1,7 +1,7 @@
 // api/geotiff-proxy.js
-// Enhanced Vercel serverless function for GeoTIFF proxy with better error handling
+// Enhanced Vercel serverless function for GeoTIFF proxy with CommonJS compatibility
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     // Enable CORS for all origins
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -12,9 +12,9 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
-    // Only allow GET requests for actual proxy
-    if (req.method !== 'GET') {
-        return res.status(405).json({ error: 'Method not allowed' });
+    // Allow both GET and HEAD requests
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+        return res.status(405).json({ error: 'Method not allowed - only GET and HEAD are supported' });
     }
 
     const { url } = req.query;
@@ -49,6 +49,7 @@ export default async function handler(req, res) {
         const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
         const response = await fetch(url, {
+            method: req.method, // Use same method as incoming request (GET or HEAD)
             signal: controller.signal,
             headers: {
                 'User-Agent': 'Vercel-Proxy/1.0',
@@ -92,7 +93,17 @@ export default async function handler(req, res) {
             });
         }
 
-        // Get the image data as array buffer
+        // For HEAD requests, just return headers without body
+        if (req.method === 'HEAD') {
+            res.setHeader('Content-Type', contentType);
+            if (contentLength) {
+                res.setHeader('Content-Length', contentLength);
+            }
+            res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=7200');
+            return res.status(200).end();
+        }
+
+        // Get the image data as array buffer (only for GET requests)
         const arrayBuffer = await response.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
         
@@ -144,4 +155,4 @@ export default async function handler(req, res) {
             type: error.name || 'Unknown'
         });
     }
-}
+}; // Changed from export default to module.exports
