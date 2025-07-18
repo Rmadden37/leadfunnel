@@ -176,7 +176,46 @@ async function createRealFluxOverlay(dataLayersData, location) {
             };
         }
         
-        console.log("Using bounds:", bounds);
+        console.log("🗺️ BOUNDS DEBUG:");
+        console.log("Building location:", location);
+        console.log("Overlay bounds:", bounds);
+        
+        // Calculate bounds size for validation
+        const latDiff = Math.abs(bounds.ne.latitude - bounds.sw.latitude);
+        const lngDiff = Math.abs(bounds.ne.longitude - bounds.sw.longitude);
+        console.log("Bounds size - Lat:", latDiff, "Lng:", lngDiff);
+        
+        // Check if bounds are reasonable (not too big, not too small)
+        if (latDiff > 0.01 || lngDiff > 0.01) {
+            console.log("⚠️ WARNING: Bounds may be too large for detailed overlay");
+        }
+        if (latDiff < 0.0001 || lngDiff < 0.0001) {
+            console.log("⚠️ WARNING: Bounds may be too small");
+        }
+        
+        // Validate bounds contain the building location
+        const containsBuilding = (
+            location.lat >= bounds.sw.latitude && 
+            location.lat <= bounds.ne.latitude &&
+            location.lng >= bounds.sw.longitude && 
+            location.lng <= bounds.ne.longitude
+        );
+        console.log("Bounds contain building:", containsBuilding);
+        
+        if (!containsBuilding) {
+            console.log("🚨 PROBLEM: Bounds don't contain the building! Adjusting...");
+            // Expand bounds to include building
+            const centerLat = (bounds.sw.latitude + bounds.ne.latitude) / 2;
+            const centerLng = (bounds.sw.longitude + bounds.ne.longitude) / 2;
+            const offsetLat = Math.max(Math.abs(location.lat - centerLat) + 0.0002, latDiff / 2);
+            const offsetLng = Math.max(Math.abs(location.lng - centerLng) + 0.0002, lngDiff / 2);
+            
+            bounds = {
+                sw: { latitude: location.lat - offsetLat, longitude: location.lng - offsetLng },
+                ne: { latitude: location.lat + offsetLat, longitude: location.lng + offsetLng }
+            };
+            console.log("📍 Adjusted bounds:", bounds);
+        }
         
         // Ensure map is in 2D mode for proper overlay rendering
         map.setTilt(0);
@@ -188,23 +227,32 @@ async function createRealFluxOverlay(dataLayersData, location) {
         
         console.log("Using proxied URL:", proxiedUrl);
         
-        // Test proxy accessibility
-        const testResponse = await fetch(proxiedUrl, { 
-            method: 'HEAD',
-            timeout: 10000 
-        });
-        
-        if (!testResponse.ok) {
-            throw new Error(`Proxy test failed: ${testResponse.status} ${testResponse.statusText}`);
-        }
-        
-        console.log('✅ Proxy accessibility confirmed');
+        // Skip the HEAD test since it was causing 405 errors - go straight to overlay creation
+        console.log('✅ Proceeding directly to overlay creation');
         
         // Create precise map bounds
         const mapBounds = new google.maps.LatLngBounds(
             new google.maps.LatLng(bounds.sw.latitude, bounds.sw.longitude),
             new google.maps.LatLng(bounds.ne.latitude, bounds.ne.longitude)
         );
+        
+        // DEBUG: Add a temporary rectangle to show where overlay should appear
+        const debugRect = new google.maps.Rectangle({
+            bounds: mapBounds,
+            strokeColor: '#00FF00',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#00FF00',
+            fillOpacity: 0.1
+        });
+        debugRect.setMap(map);
+        
+        // Remove debug rectangle after 5 seconds
+        setTimeout(() => {
+            debugRect.setMap(null);
+        }, 5000);
+        
+        console.log("🟢 Green debug rectangle shows where overlay should appear (5 seconds)");
         
         // Remove any existing overlay
         if (fluxOverlay) {
