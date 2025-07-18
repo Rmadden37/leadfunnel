@@ -81,14 +81,15 @@ async function getSolarDataLayers(lat, lng) {
     console.log('Location: ' + lat + ', ' + lng);
     
     try {
-        // Tampa Bay has HIGH quality coverage - request best available data
+        // Tampa Bay has HIGH quality coverage - request best available data with enhanced visualization
         const url = `https://solar.googleapis.com/v1/dataLayers:get?` +
                    `location.latitude=${lat}&` +
                    `location.longitude=${lng}&` +
                    `radiusMeters=100&` +
-                   `view=IMAGERY_AND_ANNUAL_FLUX_LAYERS&` +
-                   `requiredQuality=HIGH&` + // Tampa Bay supports HIGH quality
-                   `pixelSizeMeters=0.1&` + // Request maximum detail
+                   `view=FULL_LAYERS&` + // Changed to FULL_LAYERS for more complete data
+                   `requiredQuality=HIGH&` +
+                   `pixelSizeMeters=0.1&` + // Maximum detail
+                   `exactQualityRequired=false&` + // Allow fallback if needed
                    `key=AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk`;
         
         console.log('Making single optimized request...');
@@ -259,12 +260,12 @@ async function createRealFluxOverlay(dataLayersData, location) {
             fluxOverlay.setMap(null);
         }
         
-        // Create GroundOverlay with enhanced options
+        // Create GroundOverlay with enhanced visibility
         fluxOverlay = new google.maps.GroundOverlay(
             proxiedUrl,
             mapBounds,
             {
-                opacity: 0.75, // Slightly more opaque for better visibility
+                opacity: 0.9, // Increased from 0.75 for more vivid colors
                 clickable: false
             }
         );
@@ -463,26 +464,27 @@ async function searchAddress() {
                     const currentContent = insightsDetail.innerHTML;
                     insightsDetail.innerHTML = currentContent + 
                         `<div class="mt-4 p-4 bg-green-50 border border-green-300 rounded-lg">
-                            <p class="text-sm text-green-800 font-semibold mb-2">🎯 Real Solar Irradiance Map Active!</p>
-                            <p class="text-xs text-green-700 mb-3">Detailed Google Solar API heatmap showing precise rooftop solar potential:</p>
+                            <p class="text-sm text-green-800 font-semibold mb-2">🎯 High-Resolution Solar Heat Map Active!</p>
+                            <p class="text-xs text-green-700 mb-3">Detailed Google Solar API flux overlay showing precise rooftop solar irradiance:</p>
                             <div class="flex items-center justify-between text-xs">
                                 <div class="flex items-center">
-                                    <div class="w-3 h-3 rounded mr-1" style="background: rgba(100, 150, 200, 0.8);"></div>
-                                    <span class="text-blue-700">Low</span>
+                                    <div class="w-3 h-3 rounded mr-1" style="background: rgba(60, 80, 120, 0.9);"></div>
+                                    <span class="text-blue-700">Shaded</span>
                                 </div>
                                 <div class="flex items-center">
-                                    <div class="w-3 h-3 rounded mr-1" style="background: rgba(255, 255, 0, 0.8);"></div>
+                                    <div class="w-3 h-3 rounded mr-1" style="background: rgba(255, 215, 0, 0.9);"></div>
                                     <span class="text-yellow-700">Good</span>
                                 </div>
                                 <div class="flex items-center">
-                                    <div class="w-3 h-3 rounded mr-1" style="background: rgba(255, 165, 0, 0.9);"></div>
-                                    <span class="text-orange-700">High</span>
+                                    <div class="w-3 h-3 rounded mr-1" style="background: rgba(255, 140, 0, 0.9);"></div>
+                                    <span class="text-orange-700">Excellent</span>
                                 </div>
                                 <div class="flex items-center">
-                                    <div class="w-3 h-3 rounded mr-1" style="background: rgba(255, 0, 0, 1);"></div>
+                                    <div class="w-3 h-3 rounded mr-1" style="background: rgba(255, 69, 0, 1);"></div>
                                     <span class="text-red-700">Optimal</span>
                                 </div>
                             </div>
+                            <p class="text-xs text-green-600 mt-2 font-medium">🔥 Look for the bright orange/yellow areas - those are your best solar zones!</p>
                         </div>`;
                 }
             } catch (overlayError) {
