@@ -1,12 +1,12 @@
-// Complete Solar Maps with Fixed Flux Overlay Implementation
-// Replace your entire solar_maps.js file with this version
+// Fixed Solar Maps with Proper Flux Overlay Implementation
+// Replace your solar_maps.js file with this corrected version
 
 let map;
 let buildingPolygon;
 let fluxOverlay;
 
-// UPDATE THIS TO YOUR ACTUAL VERCEL DEPLOYMENT URL (fix the duplicate)
-const PROXY_BASE_URL = 'https://leadfunnel-rho.vercel.app'; // FIXED!
+// UPDATE THIS TO YOUR ACTUAL VERCEL DEPLOYMENT URL
+const PROXY_BASE_URL = 'https://leadfunnel-rho.vercel.app';
 
 function initMap() {
     console.log("Initializing Google Maps...");
@@ -23,7 +23,7 @@ function initMap() {
         tilt: 0,
         heading: 0,
         rotateControl: false,
-        gestureHandling: isMobile ? 'cooperative' : 'greedy', // Better mobile handling
+        gestureHandling: isMobile ? 'cooperative' : 'greedy',
         zoomControlOptions: {
             position: google.maps.ControlPosition.RIGHT_BOTTOM
         }
@@ -75,68 +75,68 @@ function initMap() {
     }
 }
 
-// Optimized single-request solar data fetching
+// Fixed function to get solar data layers with better error handling
 async function getSolarDataLayers(lat, lng) {
-    console.log('Fetching Solar Data Layers with optimized single request...');
-    console.log('Location: ' + lat + ', ' + lng);
+    console.log('🌞 Fetching Solar Data Layers for Tampa Bay area...');
+    console.log('📍 Location:', lat, lng);
     
     try {
-        // Tampa Bay has HIGH quality coverage - request best available data with enhanced visualization
+        // Optimized request for Tampa Bay high-quality data
         const url = `https://solar.googleapis.com/v1/dataLayers:get?` +
                    `location.latitude=${lat}&` +
                    `location.longitude=${lng}&` +
-                   `radiusMeters=100&` +
-                   `view=FULL_LAYERS&` + // Changed to FULL_LAYERS for more complete data
+                   `radiusMeters=50&` +
+                   `view=FULL_LAYERS&` +
                    `requiredQuality=HIGH&` +
-                   `pixelSizeMeters=0.1&` + // Maximum detail
-                   `exactQualityRequired=false&` + // Allow fallback if needed
+                   `pixelSizeMeters=0.1&` +
+                   `exactQualityRequired=false&` +
                    `key=AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk`;
         
-        console.log('Making single optimized request...');
+        console.log('🔗 Making request to:', url.substring(0, 100) + '...');
         
         const response = await fetch(url);
-        console.log(`Response status: ${response.status} ${response.statusText}`);
+        console.log(`📡 Response status: ${response.status} ${response.statusText}`);
         
-        if (response.ok) {
-            const data = await response.json();
-            console.log('✅ Response received, keys:', Object.keys(data).join(', '));
-            
-            // Check for flux URL
-            const fluxUrl = data.annualFluxUrl || 
-                           data.monthlyFluxUrl || 
-                           data.fluxUrl || 
-                           data.irradianceUrl;
-            
-            if (fluxUrl) {
-                console.log('🎯 FLUX DATA FOUND!');
-                console.log('Flux URL:', fluxUrl);
-                
-                // Get bounds
-                const bounds = data.imageryBounds || 
-                              data.dsmBounds || 
-                              data.bounds;
-                
-                if (bounds) {
-                    console.log('📐 Bounds found:', bounds);
-                } else {
-                    console.log('📐 No bounds found, creating estimated bounds');
-                    // Create reasonable bounds around the location
-                    const offset = 0.0008; // ~80 meters
-                    data.estimatedBounds = {
-                        sw: { latitude: lat - offset, longitude: lng - offset },
-                        ne: { latitude: lat + offset, longitude: lng + offset }
-                    };
-                }
-                
-                return data;
-            } else {
-                console.log('❌ No flux URL in response');
-                console.log('Available fields:', Object.keys(data).join(', '));
-                return null;
-            }
-        } else {
+        if (!response.ok) {
             const errorText = await response.text();
-            console.log('❌ Request failed:', response.status, '-', errorText.substring(0, 200));
+            console.error('❌ API Error:', response.status, errorText.substring(0, 200));
+            throw new Error(`Solar API request failed: ${response.status} - ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('✅ Data received, keys:', Object.keys(data));
+        
+        // Check for available flux URLs in order of preference
+        const fluxUrl = data.annualFluxUrl || 
+                       data.monthlyFluxUrl || 
+                       data.fluxUrl || 
+                       data.irradianceUrl;
+        
+        if (fluxUrl) {
+            console.log('🎯 FLUX URL FOUND:', fluxUrl.substring(0, 80) + '...');
+            
+            // Get bounds information
+            const bounds = data.imageryBounds || 
+                          data.annualFluxBounds ||
+                          data.dsmBounds || 
+                          data.bounds;
+            
+            if (bounds) {
+                console.log('📐 Bounds found:', bounds);
+                data.bounds = bounds; // Normalize bounds property
+            } else {
+                console.log('📐 No bounds found, creating estimated bounds');
+                const offset = 0.0005; // ~50 meters
+                data.estimatedBounds = {
+                    sw: { latitude: lat - offset, longitude: lng - offset },
+                    ne: { latitude: lat + offset, longitude: lng + offset }
+                };
+            }
+            
+            return data;
+        } else {
+            console.log('❌ No flux URL found in response');
+            console.log('Available data fields:', Object.keys(data));
             return null;
         }
         
@@ -146,20 +146,12 @@ async function getSolarDataLayers(lat, lng) {
     }
 }
 
-// Enhanced function to create real flux overlay with proper error handling
+// FIXED: Enhanced function to create real flux overlay with proper error handling
 async function createRealFluxOverlay(dataLayersData, location) {
-            console.log("🔄 Creating real flux overlay...");
-        console.log("📊 Flux URL found:", fluxUrl.substring(0, 80) + "...");
-        
-        // Log the exact proxy URL for manual testing
-        const fluxUrlWithKey = fluxUrl.includes('key=') ? fluxUrl : `${fluxUrl}&key=AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk`;
-        const proxiedUrl = `${PROXY_BASE_URL}/api/geotiff-proxy?url=${encodeURIComponent(fluxUrlWithKey)}`;
-        
-        console.log("🔗 Test this URL manually:", proxiedUrl);
-        console.log("💡 Copy the URL above and paste it in a new browser tab to test the proxy");
+    console.log("🔄 Creating real flux overlay...");
     
     try {
-        // Get the flux URL
+        // FIXED: Get the flux URL from the data
         const fluxUrl = dataLayersData.annualFluxUrl || 
                        dataLayersData.monthlyFluxUrl || 
                        dataLayersData.fluxUrl || 
@@ -169,12 +161,14 @@ async function createRealFluxOverlay(dataLayersData, location) {
             throw new Error('No flux URL found in data');
         }
         
+        console.log("📊 Using flux URL:", fluxUrl.substring(0, 80) + "...");
+        
         // Get bounds - prefer smaller, more detailed bounds
-        let bounds = dataLayersData.imageryBounds || 
+        let bounds = dataLayersData.bounds || 
+                    dataLayersData.imageryBounds || 
                     dataLayersData.annualFluxBounds ||
                     dataLayersData.estimatedBounds ||
-                    dataLayersData.dsmBounds || 
-                    dataLayersData.bounds;
+                    dataLayersData.dsmBounds;
         
         if (!bounds) {
             console.log("Creating precise bounds around building location");
@@ -189,19 +183,6 @@ async function createRealFluxOverlay(dataLayersData, location) {
         console.log("Building location:", location);
         console.log("Overlay bounds:", bounds);
         
-        // Calculate bounds size for validation
-        const latDiff = Math.abs(bounds.ne.latitude - bounds.sw.latitude);
-        const lngDiff = Math.abs(bounds.ne.longitude - bounds.sw.longitude);
-        console.log("Bounds size - Lat:", latDiff, "Lng:", lngDiff);
-        
-        // Check if bounds are reasonable (not too big, not too small)
-        if (latDiff > 0.01 || lngDiff > 0.01) {
-            console.log("⚠️ WARNING: Bounds may be too large for detailed overlay");
-        }
-        if (latDiff < 0.0001 || lngDiff < 0.0001) {
-            console.log("⚠️ WARNING: Bounds may be too small");
-        }
-        
         // Validate bounds contain the building location
         const containsBuilding = (
             location.lat >= bounds.sw.latitude && 
@@ -209,16 +190,11 @@ async function createRealFluxOverlay(dataLayersData, location) {
             location.lng >= bounds.sw.longitude && 
             location.lng <= bounds.ne.longitude
         );
-        console.log("Bounds contain building:", containsBuilding);
         
         if (!containsBuilding) {
-            console.log("🚨 PROBLEM: Bounds don't contain the building! Adjusting...");
-            // Expand bounds to include building
-            const centerLat = (bounds.sw.latitude + bounds.ne.latitude) / 2;
-            const centerLng = (bounds.sw.longitude + bounds.ne.longitude) / 2;
-            const offsetLat = Math.max(Math.abs(location.lat - centerLat) + 0.0002, latDiff / 2);
-            const offsetLng = Math.max(Math.abs(location.lng - centerLng) + 0.0002, lngDiff / 2);
-            
+            console.log("🚨 Adjusting bounds to include building...");
+            const offsetLat = 0.0005;
+            const offsetLng = 0.0005;
             bounds = {
                 sw: { latitude: location.lat - offsetLat, longitude: location.lng - offsetLng },
                 ne: { latitude: location.lat + offsetLat, longitude: location.lng + offsetLng }
@@ -230,14 +206,30 @@ async function createRealFluxOverlay(dataLayersData, location) {
         map.setTilt(0);
         map.setHeading(0);
         
-        // Prepare the proxied URL
+        // FIXED: Prepare the proxied URL with proper encoding
         const fluxUrlWithKey = fluxUrl.includes('key=') ? fluxUrl : `${fluxUrl}&key=AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk`;
         const proxiedUrl = `${PROXY_BASE_URL}/api/geotiff-proxy?url=${encodeURIComponent(fluxUrlWithKey)}`;
         
-        console.log("Using proxied URL:", proxiedUrl);
+        console.log("🔗 Testing proxy URL:", proxiedUrl);
         
-        // Skip the HEAD test since it was causing 405 errors - go straight to overlay creation
-        console.log('✅ Proceeding directly to overlay creation');
+        // Test the proxy endpoint first with a HEAD request
+        try {
+            const testResponse = await fetch(proxiedUrl, { method: 'HEAD' });
+            console.log(`🧪 Proxy test result: ${testResponse.status} ${testResponse.statusText}`);
+            
+            if (!testResponse.ok) {
+                console.error(`❌ Proxy test failed: ${testResponse.status}`);
+                // Try with GET instead of HEAD
+                const getTest = await fetch(proxiedUrl);
+                console.log(`🧪 GET test result: ${getTest.status} ${getTest.statusText}`);
+                if (!getTest.ok) {
+                    throw new Error(`Proxy unavailable: ${getTest.status}`);
+                }
+            }
+        } catch (proxyError) {
+            console.error('❌ Proxy test failed:', proxyError.message);
+            throw new Error(`Proxy connection failed: ${proxyError.message}`);
+        }
         
         // Create precise map bounds
         const mapBounds = new google.maps.LatLngBounds(
@@ -250,89 +242,81 @@ async function createRealFluxOverlay(dataLayersData, location) {
             fluxOverlay.setMap(null);
         }
         
-        // Create GroundOverlay with enhanced visibility and debugging
+        // Create GroundOverlay with enhanced visibility
         fluxOverlay = new google.maps.GroundOverlay(
             proxiedUrl,
             mapBounds,
             {
-                opacity: 0.9, // High opacity for visibility
+                opacity: 0.85,
                 clickable: false
             }
         );
         
-        // Add comprehensive error handling and debugging
+        // Add comprehensive error handling
+        let overlayLoaded = false;
+        let loadingTimeout;
+        
         fluxOverlay.addListener('error', function(error) {
             console.error('🚨 GroundOverlay ERROR:', error);
+            clearTimeout(loadingTimeout);
         });
         
-        // Test if the overlay loads successfully
-        let overlayLoaded = false;
         fluxOverlay.addListener('idle', function() {
             overlayLoaded = true;
             console.log('✅ GroundOverlay loaded successfully!');
+            clearTimeout(loadingTimeout);
         });
         
-        // Check if overlay fails to load after 10 seconds
-        setTimeout(() => {
+        // Set a loading timeout
+        loadingTimeout = setTimeout(() => {
             if (!overlayLoaded) {
-                console.log('⚠️ Overlay may have failed to load - testing URL directly...');
+                console.log('⚠️ Overlay loading timeout - testing URL directly...');
                 
-                // Test the proxied URL directly
                 fetch(proxiedUrl)
                     .then(response => {
-                        console.log('Direct URL test result:', response.status, response.statusText);
+                        console.log('Direct URL test:', response.status, response.statusText);
                         console.log('Content-Type:', response.headers.get('content-type'));
                         console.log('Content-Length:', response.headers.get('content-length'));
-                        
-                        if (!response.ok) {
-                            console.error('❌ Proxied URL is not accessible:', response.status);
-                        } else {
-                            console.log('✅ Proxied URL is accessible - may be a bounds issue');
-                            console.log('🗺️ Check if overlay bounds match building location');
-                        }
                     })
                     .catch(error => {
                         console.error('❌ Direct URL test failed:', error);
                     });
             }
-        }, 10000);
+        }, 15000);
         
-        // Add the overlay to the map with enhanced debugging
+        // Add the overlay to the map
         fluxOverlay.setMap(map);
         
-        // Add a bright test rectangle to verify bounds are visible
+        // Add visual bounds indicator (temporary)
         const testRect = new google.maps.Rectangle({
             bounds: mapBounds,
-            strokeColor: '#FF0000',
-            strokeOpacity: 1,
-            strokeWeight: 3,
-            fillColor: '#FF0000',
-            fillOpacity: 0.2
+            strokeColor: '#00FF00',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillOpacity: 0
         });
         testRect.setMap(map);
         
-        // Remove test rectangle after 3 seconds
+        // Remove test rectangle after 5 seconds
         setTimeout(() => {
             testRect.setMap(null);
-            console.log("🔴 Red test rectangle removed - if you saw it, bounds are correct");
-        }, 3000);
+            console.log("✅ Green test rectangle removed");
+        }, 5000);
         
-        console.log('🎯 GroundOverlay created with:');
-        console.log('  URL:', proxiedUrl);
+        console.log('🎯 GroundOverlay created successfully');
+        console.log('  URL:', proxiedUrl.substring(0, 100) + '...');
         console.log('  Bounds:', mapBounds.toString());
-        console.log('  Opacity:', 0.9);
         
-        // Fit map to show the overlay area with some padding
+        // Fit map to show the overlay area
         const extendedBounds = new google.maps.LatLngBounds();
         extendedBounds.extend(new google.maps.LatLng(bounds.sw.latitude - 0.0001, bounds.sw.longitude - 0.0001));
         extendedBounds.extend(new google.maps.LatLng(bounds.ne.latitude + 0.0001, bounds.ne.longitude + 0.0001));
         map.fitBounds(extendedBounds);
         
-        console.log("🎉 SUCCESS: Real detailed flux overlay created!");
         return true;
         
     } catch (error) {
-        console.error("❌ Real flux overlay creation failed:", error);
+        console.error("❌ Real flux overlay creation failed:", error.message);
         
         // Clean up failed overlay
         if (fluxOverlay) {
@@ -344,6 +328,7 @@ async function createRealFluxOverlay(dataLayersData, location) {
     }
 }
 
+// Enhanced simulation overlay as fallback
 function createHighQualitySimulatedOverlay(solarPotential, location, buildingPolygonPaths) {
     console.log("🎨 Creating high-quality simulated flux overlay...");
     
@@ -397,6 +382,7 @@ function createHighQualitySimulatedOverlay(solarPotential, location, buildingPol
     }
 }
 
+// FIXED: Enhanced search function with better error handling
 async function searchAddress() {
     const addressInput = document.getElementById("addressInput");
     const solarInfo = document.getElementById("solarInfo");
@@ -443,7 +429,7 @@ async function searchAddress() {
             const geocodeData = await geocodeResponse.json();
 
             if (geocodeData.status !== "OK" || !geocodeData.results.length) {
-                throw new Error("Address not found");
+                throw new Error("Address not found. Please try a more specific address.");
             }
             location = geocodeData.results[0].geometry.location;
         }
@@ -456,13 +442,15 @@ async function searchAddress() {
         map.setTilt(0);
         map.setHeading(0);
 
-        // Get building insights
+        // Get building insights first
         console.log("🏠 Fetching building insights...");
         const buildingInsightsUrl = `https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${location.lat}&location.longitude=${location.lng}&key=AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk`;
         const insightsResponse = await fetch(buildingInsightsUrl);
         
         if (!insightsResponse.ok) {
-            throw new Error(`Solar API error: ${insightsResponse.status}`);
+            const errorText = await insightsResponse.text();
+            console.error("Building insights error:", insightsResponse.status, errorText);
+            throw new Error(`Solar analysis failed: ${insightsResponse.status} - ${insightsResponse.statusText}`);
         }
         
         const insights = await insightsResponse.json();
@@ -493,52 +481,57 @@ async function searchAddress() {
             console.log("🏗️ Building outline created");
         }
 
-        // Get detailed solar flux data
+        // FIXED: Get detailed solar flux data with better error handling
         console.log("☀️ Fetching detailed solar flux data...");
-        const dataLayersData = await getSolarDataLayers(location.lat, location.lng);
-
         let overlaySuccess = false;
+        
+        try {
+            const dataLayersData = await getSolarDataLayers(location.lat, location.lng);
 
-        if (dataLayersData) {
-            try {
-                overlaySuccess = await createRealFluxOverlay(dataLayersData, location);
-                
-                if (overlaySuccess && insightsDetail) {
-                    const currentContent = insightsDetail.innerHTML;
-                    insightsDetail.innerHTML = currentContent + 
-                        `<div class="mt-4 p-4 bg-green-50 border border-green-300 rounded-lg">
-                            <p class="text-sm text-green-800 font-semibold mb-2">🎯 High-Resolution Solar Heat Map Active!</p>
-                            <p class="text-xs text-green-700 mb-3">Detailed Google Solar API flux overlay showing precise rooftop solar irradiance:</p>
-                            <div class="flex items-center justify-between text-xs">
-                                <div class="flex items-center">
-                                    <div class="w-3 h-3 rounded mr-1" style="background: rgba(60, 80, 120, 0.9);"></div>
-                                    <span class="text-blue-700">Shaded</span>
+            if (dataLayersData) {
+                try {
+                    overlaySuccess = await createRealFluxOverlay(dataLayersData, location);
+                    
+                    if (overlaySuccess && insightsDetail) {
+                        const currentContent = insightsDetail.innerHTML;
+                        insightsDetail.innerHTML = currentContent + 
+                            `<div class="mt-4 p-4 bg-green-50 border border-green-300 rounded-lg">
+                                <p class="text-sm text-green-800 font-semibold mb-2">🎯 High-Resolution Solar Heat Map Active!</p>
+                                <p class="text-xs text-green-700 mb-3">Detailed Google Solar API flux overlay showing precise rooftop solar irradiance:</p>
+                                <div class="flex items-center justify-between text-xs">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 rounded mr-1" style="background: rgba(60, 80, 120, 0.9);"></div>
+                                        <span class="text-blue-700">Shaded</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 rounded mr-1" style="background: rgba(255, 215, 0, 0.9);"></div>
+                                        <span class="text-yellow-700">Good</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 rounded mr-1" style="background: rgba(255, 140, 0, 0.9);"></div>
+                                        <span class="text-orange-700">Excellent</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 rounded mr-1" style="background: rgba(255, 69, 0, 1);"></div>
+                                        <span class="text-red-700">Optimal</span>
+                                    </div>
                                 </div>
-                                <div class="flex items-center">
-                                    <div class="w-3 h-3 rounded mr-1" style="background: rgba(255, 215, 0, 0.9);"></div>
-                                    <span class="text-yellow-700">Good</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <div class="w-3 h-3 rounded mr-1" style="background: rgba(255, 140, 0, 0.9);"></div>
-                                    <span class="text-orange-700">Excellent</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <div class="w-3 h-3 rounded mr-1" style="background: rgba(255, 69, 0, 1);"></div>
-                                    <span class="text-red-700">Optimal</span>
-                                </div>
-                            </div>
-                            <p class="text-xs text-green-600 mt-2 font-medium">🔥 Look for the bright orange/yellow areas - those are your best solar zones!</p>
-                        </div>`;
+                                <p class="text-xs text-green-600 mt-2 font-medium">🔥 Look for the bright orange/yellow areas - those are your best solar zones!</p>
+                            </div>`;
+                    }
+                } catch (overlayError) {
+                    console.error("Real overlay failed:", overlayError.message);
+                    overlaySuccess = false;
                 }
-            } catch (overlayError) {
-                console.error("Real overlay failed:", overlayError);
-                overlaySuccess = false;
             }
+        } catch (dataLayersError) {
+            console.error("Data layers fetch failed:", dataLayersError.message);
+            overlaySuccess = false;
         }
 
-        // Fallback to high-quality simulation if real overlay failed
+        // Fallback to simulation if real overlay failed
         if (!overlaySuccess && insights.solarPotential) {
-            console.log("🎨 Using enhanced simulation...");
+            console.log("🎨 Using enhanced simulation fallback...");
             const simulationSuccess = createHighQualitySimulatedOverlay(
                 insights.solarPotential, 
                 location, 
@@ -569,7 +562,7 @@ async function searchAddress() {
                                 <span class="text-red-700">Optimal</span>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-600 mt-2"><em>Detailed flux data not available - using enhanced simulation</em></p>
+                        <p class="text-xs text-gray-600 mt-2"><em>Detailed flux data temporarily unavailable - using enhanced simulation</em></p>
                     </div>`;
             }
         }
@@ -578,7 +571,7 @@ async function searchAddress() {
             const currentContent = insightsDetail.innerHTML;
             insightsDetail.innerHTML = currentContent + 
                 `<div class="mt-4 p-3 bg-orange-100 border border-orange-400 rounded">
-                    <p class="text-sm text-orange-800">ℹ️ Solar analysis complete. Detailed irradiance mapping not available for this location.</p>
+                    <p class="text-sm text-orange-800">ℹ️ Solar analysis complete. Detailed irradiance mapping temporarily unavailable for this location.</p>
                 </div>`;
         }
 
