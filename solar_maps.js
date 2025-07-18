@@ -538,7 +538,7 @@ async function searchAddress() {
 
         // Fallback to high-quality simulation if real overlay failed
         if (!overlaySuccess && insights.solarPotential) {
-            console.log("🎨 Falling back to enhanced simulation...");
+            console.log("🎨 Using enhanced simulation...");
             const simulationSuccess = createHighQualitySimulatedOverlay(
                 insights.solarPotential, 
                 location, 
