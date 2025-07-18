@@ -146,148 +146,156 @@ async function getSolarDataLayers(lat, lng) {
     }
 }
 
-// FIXED: Enhanced function to create real flux overlay with proper error handling
+// FIXED: Enhanced function to create real flux overlay with proper error handling and GeoTIFF rendering
 async function createRealFluxOverlay(dataLayersData, location) {
-    console.log("🔄 Creating real flux overlay...");
-    
+    console.log("🔄 Creating real flux overlay with GeoTIFF rendering...");
+
     try {
-        // FIXED: Get the flux URL from the data
-        const fluxUrl = dataLayersData.annualFluxUrl || 
-                       dataLayersData.monthlyFluxUrl || 
-                       dataLayersData.fluxUrl || 
+        const fluxUrl = dataLayersData.annualFluxUrl ||
+                       dataLayersData.monthlyFluxUrl ||
+                       dataLayersData.fluxUrl ||
                        dataLayersData.irradianceUrl;
-        
+
         if (!fluxUrl) {
-            throw new Error('No flux URL found in data');
+            throw new Error('No flux URL found in data for GeoTIFF rendering');
         }
-        
-        console.log("📊 Using flux URL:", fluxUrl.substring(0, 80) + "...");
-        
-        // Get bounds - prefer smaller, more detailed bounds
-        let bounds = dataLayersData.bounds || 
-                    dataLayersData.imageryBounds || 
+
+        console.log("📊 Using flux URL for GeoTIFF:", fluxUrl.substring(0, 80) + "...");
+
+        // Get bounds - prefer smaller, more detailed bounds for the overlay
+        let bounds = dataLayersData.bounds ||
+                    dataLayersData.imageryBounds ||
                     dataLayersData.annualFluxBounds ||
                     dataLayersData.estimatedBounds ||
                     dataLayersData.dsmBounds;
-        
+
         if (!bounds) {
-            console.log("Creating precise bounds around building location");
+            console.log("Creating precise bounds around building location for overlay");
             const offset = 0.0003; // ~30 meters for detailed view
             bounds = {
                 sw: { latitude: location.lat - offset, longitude: location.lng - offset },
                 ne: { latitude: location.lat + offset, longitude: location.lng + offset }
             };
         }
-        
-        console.log("🗺️ BOUNDS DEBUG:");
+
+        console.log("🗺️ BOUNDS DEBUG (for GeoTIFF overlay):");
         console.log("Building location:", location);
         console.log("Overlay bounds:", bounds);
-        
-        // Validate bounds contain the building location
-        const containsBuilding = (
-            location.lat >= bounds.sw.latitude && 
-            location.lat <= bounds.ne.latitude &&
-            location.lng >= bounds.sw.longitude && 
-            location.lng <= bounds.ne.longitude
-        );
-        
-        if (!containsBuilding) {
-            console.log("🚨 Adjusting bounds to include building...");
-            const offsetLat = 0.0005;
-            const offsetLng = 0.0005;
-            bounds = {
-                sw: { latitude: location.lat - offsetLat, longitude: location.lng - offsetLng },
-                ne: { latitude: location.lat + offsetLat, longitude: location.lng + offsetLng }
-            };
-            console.log("📍 Adjusted bounds:", bounds);
-        }
-        
+
         // Ensure map is in 2D mode for proper overlay rendering
         map.setTilt(0);
         map.setHeading(0);
-        
-        // FIXED: Prepare the proxied URL with proper encoding
+
+        // Prepare the proxied URL with proper encoding for fetching GeoTIFF
         const fluxUrlWithKey = fluxUrl.includes('key=') ? fluxUrl : `${fluxUrl}&key=AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk`;
         const proxiedUrl = `${PROXY_BASE_URL}/api/geotiff-proxy?url=${encodeURIComponent(fluxUrlWithKey)}`;
-        
-        console.log("🔗 Testing proxy URL:", proxiedUrl);
-        
-        // Test the proxy endpoint first with a HEAD request
-        try {
-            const testResponse = await fetch(proxiedUrl, { method: 'HEAD' });
-            console.log(`🧪 Proxy test result: ${testResponse.status} ${testResponse.statusText}`);
-            
-            if (!testResponse.ok) {
-                console.error(`❌ Proxy test failed: ${testResponse.status}`);
-                // Try with GET instead of HEAD
-                const getTest = await fetch(proxiedUrl);
-                console.log(`🧪 GET test result: ${getTest.status} ${getTest.statusText}`);
-                if (!getTest.ok) {
-                    throw new Error(`Proxy unavailable: ${getTest.status}`);
-                }
-            }
-        } catch (proxyError) {
-            console.error('❌ Proxy test failed:', proxyError.message);
-            throw new Error(`Proxy connection failed: ${proxyError.message}`);
+
+        console.log("🔗 Fetching GeoTIFF from proxy:", proxiedUrl);
+
+        // Fetch the GeoTIFF as an ArrayBuffer
+        const response = await fetch(proxiedUrl);
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ GeoTIFF fetch failed:', response.status, errorText.substring(0, 200));
+            throw new Error(`Failed to fetch GeoTIFF from proxy: ${response.status} - ${response.statusText}`);
         }
-        
+
+        const arrayBuffer = await response.arrayBuffer();
+        console.log("✅ GeoTIFF ArrayBuffer received, size:", arrayBuffer.byteLength, "bytes");
+
+        // Parse the GeoTIFF and render to canvas
+        const tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);
+        const image = await tiff.getImage();
+
+        const width = image.getWidth();
+        const height = image.getHeight();
+        const rasters = await image.readRasters();
+
+        // Create a canvas element to draw the GeoTIFF
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.createImageData(width, height);
+
+        // Simple single-band rendering (assuming flux data is in the first band)
+        // You might need to adjust this logic based on actual GeoTIFF band structure
+        // and desired colorization. This example uses a simple grayscale-like mapping.
+        const bandData = rasters[0]; // Assuming the first band contains the flux data
+        let maxFlux = 0;
+        for (let i = 0; i < bandData.length; i++) {
+            if (bandData[i] > maxFlux) maxFlux = bandData[i];
+        }
+        if (maxFlux === 0) maxFlux = 1; // Prevent division by zero
+
+        for (let i = 0; i < bandData.length; i++) {
+            const pixelValue = bandData[i];
+            // Normalize value to 0-255 for color mapping
+            const normalized = pixelValue / maxFlux; // or a more sophisticated mapping
+            const color = Math.floor(normalized * 255); // Grayscale from black (0) to white (255)
+
+            const idx = i * 4;
+            // You can implement custom color mapping here (e.g., green for high flux, red for low)
+            // For now, let's just make it a visible yellowish-red based on intensity
+            imageData.data[idx] = Math.min(255, color * 1.5); // Red
+            imageData.data[idx + 1] = Math.min(255, color * 0.8); // Green
+            imageData.data[idx + 2] = 0; // Blue
+            imageData.data[idx + 3] = Math.floor(normalized * 255 * 0.8); // Alpha (opacity)
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+
+        // Get the Data URL from the canvas
+        const dataUrl = canvas.toDataURL('image/png');
+        console.log("✅ GeoTIFF rendered to canvas and converted to Data URL (PNG)");
+
         // Create precise map bounds
         const mapBounds = new google.maps.LatLngBounds(
             new google.maps.LatLng(bounds.sw.latitude, bounds.sw.longitude),
             new google.maps.LatLng(bounds.ne.latitude, bounds.ne.longitude)
         );
-        
+
         // Remove any existing overlay
         if (fluxOverlay) {
             fluxOverlay.setMap(null);
         }
-        
-        // Create GroundOverlay with enhanced visibility
+
+        // Create GroundOverlay with the Data URL
         fluxOverlay = new google.maps.GroundOverlay(
-            proxiedUrl,
+            dataUrl, // Use the Data URL here
             mapBounds,
             {
-                opacity: 0.85,
+                opacity: 0.9, // Adjust opacity as needed
                 clickable: false
             }
         );
-        
-        // Add comprehensive error handling
+
+        // Add comprehensive error handling for GroundOverlay (still applies)
         let overlayLoaded = false;
         let loadingTimeout;
-        
+
         fluxOverlay.addListener('error', function(error) {
-            console.error('🚨 GroundOverlay ERROR:', error);
+            console.error('🚨 GroundOverlay ERROR (after GeoTIFF render):', error);
             clearTimeout(loadingTimeout);
         });
-        
+
         fluxOverlay.addListener('idle', function() {
             overlayLoaded = true;
-            console.log('✅ GroundOverlay loaded successfully!');
+            console.log('✅ GroundOverlay loaded successfully with rendered GeoTIFF!');
             clearTimeout(loadingTimeout);
         });
-        
+
         // Set a loading timeout
         loadingTimeout = setTimeout(() => {
             if (!overlayLoaded) {
-                console.log('⚠️ Overlay loading timeout - testing URL directly...');
-                
-                fetch(proxiedUrl)
-                    .then(response => {
-                        console.log('Direct URL test:', response.status, response.statusText);
-                        console.log('Content-Type:', response.headers.get('content-type'));
-                        console.log('Content-Length:', response.headers.get('content-length'));
-                    })
-                    .catch(error => {
-                        console.error('❌ Direct URL test failed:', error);
-                    });
+                console.log('⚠️ Overlay loading timeout - rendered image may not have appeared.');
             }
         }, 15000);
-        
+
         // Add the overlay to the map
         fluxOverlay.setMap(map);
-        
-        // Add visual bounds indicator (temporary)
+
+        // Add visual bounds indicator (temporary, still useful for debugging)
         const testRect = new google.maps.Rectangle({
             bounds: mapBounds,
             strokeColor: '#00FF00',
@@ -296,34 +304,33 @@ async function createRealFluxOverlay(dataLayersData, location) {
             fillOpacity: 0
         });
         testRect.setMap(map);
-        
+
         // Remove test rectangle after 5 seconds
         setTimeout(() => {
             testRect.setMap(null);
             console.log("✅ Green test rectangle removed");
         }, 5000);
-        
-        console.log('🎯 GroundOverlay created successfully');
-        console.log('  URL:', proxiedUrl.substring(0, 100) + '...');
+
+        console.log('🎯 GroundOverlay created successfully with canvas-rendered image');
         console.log('  Bounds:', mapBounds.toString());
-        
+
         // Fit map to show the overlay area
         const extendedBounds = new google.maps.LatLngBounds();
         extendedBounds.extend(new google.maps.LatLng(bounds.sw.latitude - 0.0001, bounds.sw.longitude - 0.0001));
         extendedBounds.extend(new google.maps.LatLng(bounds.ne.latitude + 0.0001, bounds.ne.longitude + 0.0001));
         map.fitBounds(extendedBounds);
-        
+
         return true;
-        
+
     } catch (error) {
-        console.error("❌ Real flux overlay creation failed:", error.message);
-        
+        console.error("❌ Real flux overlay creation failed (GeoTIFF render error):", error.message);
+
         // Clean up failed overlay
         if (fluxOverlay) {
             fluxOverlay.setMap(null);
             fluxOverlay = null;
         }
-        
+
         throw error;
     }
 }
