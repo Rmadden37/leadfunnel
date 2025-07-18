@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mobile Solar Analysis - Test Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Mobile-Optimized Solar App Styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #f8fafc;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        
+        /* Enhanced map container */
+        #map {
+            height: 250px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (min-width: 768px) {
+            #map { height: 400px; }
+        }
+        
+        /* Touch-friendly buttons */
+        .touch-button {
+            min-height: 48px;
+            touch-action: manipulation;
+            user-select: none;
+        }
+        
+        /* Loading states */
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+            background-size: 400% 100%;
+            animation: skeleton-loading 1.4s ease-in-out infinite;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 100% 50%; }
+            100% { background-position: -100% 50%; }
+        }
+        
+        /* Mobile form inputs - prevents zoom on iOS */
+        input[type="text"], input[type="email"] {
+            font-size: 16px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        
+        input:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Google Places Autocomplete optimization */
+        .pac-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: none;
+            z-index: 1000;
+            font-family: inherit;
+        }
+        
+        .pac-item {
+            padding: 14px 16px;
+            font-size: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+        }
+        
+        .pac-item:hover, .pac-item.pac-item-selected {
+            background-color: #f8fafc;
+        }
+        
+        /* Connection quality indicator */
+        .connection-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+        .connection-fast { background: #10b981; color: white; }
+        .connection-medium { background: #f59e0b; color: white; }
+        .connection-slow { background: #ef4444; color: white; }
+        
+        /* Haptic feedback simulation */
+        .haptic-feedback {
+            animation: haptic 0.1s ease-in-out;
+        }
+        
+        @keyframes haptic {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.98); }
+        }
+        
+        /* Error states */
+        .error-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body { background-color: #0f172a; color: #f1f5f9; }
+            .pac-container { background: #1e293b; }
+            .pac-item:hover { background-color: #334155; }
+            input { background: #1e293b; border-color: #475569; color: #f1f5f9; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Connection Quality Indicator -->
+    <div id="connectionIndicator" class="connection-indicator hidden">
+        <span id="connectionText">Fast</span>
+    </div>
+
+    <!-- Mobile-optimized container -->
+    <div class="max-w-lg mx-auto p-4 space-y-6">
+        
+        <!-- Header -->
+        <div class="text-center py-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                Solar Analysis 
+                <span class="text-blue-600">Mobile Test</span>
+            </h1>
+            <p class="text-gray-600">Enhanced mobile experience with better UX</p>
+        </div>
+        
+        <!-- Address Search Form -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">
+                Find Your Solar Potential
+            </h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="addressInput" class="block text-sm font-medium text-gray-700 mb-2">
+                        Enter your address
+                    </label>
+                    <input 
+                        type="text" 
+                        id="addressInput" 
+                        placeholder="123 Main St, Tampa, FL"
+                        class="w-full"
+                        autocomplete="address-line1"
+                    >
+                </div>
+                
+                <button 
+                    id="searchButton" 
+                    onclick="handleSearch()"
+                    class="touch-button w-full bg-blue-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-200"
+                >
+                    <span id="searchButtonText">Analyze Solar Potential</span>
+                    <div id="searchButtonSpinner" class="hidden inline-block ml-2">
+                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    </div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Map Container -->
+        <div class="bg-white rounded-2xl p-4 shadow-lg">
+            <h3 class="text-lg font-semibold mb-3 text-gray-800">Location Map</h3>
+            <div id="map"></div>
+        </div>
+        
+        <!-- Solar Analysis Results -->
+        <div id="solarInfo" class="bg-white rounded-2xl p-6 shadow-lg">
+            <div class="text-center py-8">
+                <div class="text-blue-600 mb-4">
+                    <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-gray-800">Ready to Analyze</h3>
+                <p class="text-gray-600">Enter an address above to see detailed solar potential analysis</p>
+            </div>
+        </div>
+        
+        <!-- Detailed Insights -->
+        <div id="insightsDetail" class="bg-white rounded-2xl p-6 shadow-lg">
+            <h3 class="text-lg font-semibold mb-4 text-gray-800">Solar Insights</h3>
+            <div class="text-center py-8 text-gray-500">
+                <p>Detailed insights will appear here after analysis</p>
+            </div>
+        </div>
+        
+        <!-- Mobile-specific features -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl p-6">
+            <h3 class="text-lg font-semibold mb-2">Mobile Features</h3>
+            <div class="space-y-2 text-sm">
+                <div class="flex items-center space-x-2">
+                    <span class="text-green-300">✓</span>
+                    <span>Touch-optimized interface</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-green-300">✓</span>
+                    <span>Smart loading states</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-green-300">✓</span>
+                    <span>Network quality detection</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-green-300">✓</span>
+                    <span>Cooperative gesture handling</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Mobile optimization utilities
+        let map;
+        let connectionQuality = 'fast';
+        
+        // Detect connection quality
+        function detectConnection() {
+            if ('connection' in navigator) {
+                const conn = navigator.connection;
+                if (conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g') {
+                    connectionQuality = 'slow';
+                } else if (conn.effectiveType === '3g') {
+                    connectionQuality = 'medium';
+                } else {
+                    connectionQuality = 'fast';
+                }
+                updateConnectionIndicator();
+            }
+        }
+        
+        function updateConnectionIndicator() {
+            const indicator = document.getElementById('connectionIndicator');
+            const text = document.getElementById('connectionText');
+            
+            indicator.className = `connection-indicator connection-${connectionQuality}`;
+            text.textContent = connectionQuality.charAt(0).toUpperCase() + connectionQuality.slice(1);
+            indicator.classList.remove('hidden');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                indicator.classList.add('hidden');
+            }, 3000);
+        }
+        
+        // Enhanced Google Maps initialization
+        function initMap() {
+            console.log("Initializing mobile-optimized Google Maps...");
+            
+            const isMobile = window.innerWidth <= 768;
+            
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 27.9306, lng: -82.4497 }, // Davis Islands, Tampa
+                zoom: isMobile ? 16 : 17,
+                mapTypeId: google.maps.MapTypeId.SATELLITE,
+                streetViewControl: false,
+                fullscreenControl: !isMobile,
+                mapTypeControl: !isMobile,
+                tilt: 0,
+                heading: 0,
+                rotateControl: false,
+                gestureHandling: 'cooperative', // Prevents scroll conflicts
+                zoomControl: true,
+                zoomControlOptions: {
+                    position: google.maps.ControlPosition.RIGHT_BOTTOM
+                }
+            });
+            
+            setupAddressAutocomplete();
+        }
+        
+        function setupAddressAutocomplete() {
+            const input = document.getElementById("addressInput");
+            
+            if (google.maps.places && input) {
+                const autocomplete = new google.maps.places.Autocomplete(input, {
+                    types: ['address'],
+                    componentRestrictions: { country: 'us' },
+                    fields: ['place_id', 'geometry', 'name', 'formatted_address']
+                });
+                
+                autocomplete.addListener('place_changed', function() {
+                    const place = autocomplete.getPlace();
+                    if (place.geometry) {
+                        window.selectedPlace = place;
+                        console.log("Place selected:", place.formatted_address);
+                        
+                        // Add haptic feedback simulation
+                        input.classList.add('haptic-feedback');
+                        setTimeout(() => input.classList.remove('haptic-feedback'), 100);
+                        
+                        // Auto-trigger search after autocomplete
+                        setTimeout(() => handleSearch(), 300);
+                    }
+                });
+                
+                // Mobile keyboard handling
+                input.addEventListener('focus', function() {
+                    if (window.innerWidth <= 768) {
+                        setTimeout(() => {
+                            this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 300);
+                    }
+                });
+            }
+        }
+        
+        // Enhanced search handling
+        function handleSearch() {
+            const input = document.getElementById("addressInput");
+            const button = document.getElementById("searchButton");
+            const buttonText = document.getElementById("searchButtonText");
+            const spinner = document.getElementById("searchButtonSpinner");
+            
+            if (!input.value.trim()) {
+                // Show error with shake animation
+                input.classList.add('error-shake');
+                setTimeout(() => input.classList.remove('error-shake'), 500);
+                return;
+            }
+            
+            // Show loading state
+            button.disabled = true;
+            buttonText.textContent = "Analyzing...";
+            spinner.classList.remove('hidden');
+            
+            // Add haptic feedback
+            button.classList.add('haptic-feedback');
+            setTimeout(() => button.classList.remove('haptic-feedback'), 100);
+            
+            showLoadingState();
+            
+            // Simulate analysis (replace with actual API call)
+            setTimeout(() => {
+                showMockResults(input.value);
+                
+                // Reset button
+                button.disabled = false;
+                buttonText.textContent = "Analyze Solar Potential";
+                spinner.classList.add('hidden');
+            }, 2000);
+        }
+        
+        function showLoadingState() {
+            const solarInfo = document.getElementById("solarInfo");
+            const insights = document.getElementById("insightsDetail");
+            
+            solarInfo.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center justify-center py-6">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
+                        <span class="text-gray-600">Analyzing solar potential...</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="loading-skeleton h-4 rounded"></div>
+                        <div class="loading-skeleton h-4 rounded w-3/4"></div>
+                        <div class="loading-skeleton h-20 rounded"></div>
+                    </div>
+                </div>
+            `;
+            
+            insights.innerHTML = `
+                <h3 class="text-lg font-semibold mb-4 text-gray-800">Solar Insights</h3>
+                <div class="space-y-3">
+                    <div class="loading-skeleton h-4 rounded"></div>
+                    <div class="loading-skeleton h-4 rounded w-2/3"></div>
+                    <div class="loading-skeleton h-16 rounded"></div>
+                    <div class="loading-skeleton h-4 rounded w-1/2"></div>
+                </div>
+            `;
+        }
+        
+        function showMockResults(address) {
+            const solarInfo = document.getElementById("solarInfo");
+            const insights = document.getElementById("insightsDetail");
+            
+            // Mock data for demonstration
+            const mockData = {
+                panels: Math.floor(Math.random() * 20) + 15,
+                area: Math.floor(Math.random() * 500) + 800,
+                energy: Math.floor(Math.random() * 5000) + 12000,
+                savings: Math.floor(Math.random() * 30000) + 45000
+            };
+            
+            solarInfo.innerHTML = `
+                <div class="space-y-4">
+                    <div class="text-center pb-4 border-b border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-800 mb-1">Solar Analysis Complete</h3>
+                        <p class="text-sm text-gray-600 truncate">${address}</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-blue-50 p-4 rounded-xl text-center">
+                            <div class="text-2xl font-bold text-blue-600">${mockData.panels}</div>
+                            <div class="text-xs text-gray-600">Solar Panels</div>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-xl text-center">
+                            <div class="text-2xl font-bold text-green-600">${mockData.area}</div>
+                            <div class="text-xs text-gray-600">sq ft</div>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-xl text-center">
+                            <div class="text-2xl font-bold text-yellow-600">${mockData.energy.toLocaleString()}</div>
+                            <div class="text-xs text-gray-600">kWh/year</div>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-xl text-center">
+                            <div class="text-2xl font-bold text-purple-600">$${mockData.savings.toLocaleString()}</div>
+                            <div class="text-xs text-gray-600">20yr Savings</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            insights.innerHTML = `
+                <h3 class="text-lg font-semibold mb-4 text-gray-800">Solar Insights</h3>
+                <div class="space-y-4">
+                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-xl">
+                        <h4 class="font-semibold mb-2">Your Solar Potential</h4>
+                        <p class="text-sm opacity-90">
+                            This rooftop can generate <strong>${Math.round(mockData.energy/12).toLocaleString()} kWh per month</strong>, 
+                            potentially saving you <strong>$${Math.round(mockData.savings/240)}/month</strong> on electricity.
+                        </p>
+                    </div>
+                    
+                    <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
+                        <div class="flex items-start">
+                            <span class="text-yellow-600 mr-2">💡</span>
+                            <div class="text-sm">
+                                <p class="font-medium text-yellow-800 mb-1">Next Steps</p>
+                                <p class="text-yellow-700">Contact our certified installer for a detailed assessment and custom quote.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Update map location
+            if (window.selectedPlace && window.selectedPlace.geometry) {
+                const location = window.selectedPlace.geometry.location;
+                map.setCenter(location);
+                map.setZoom(19);
+                
+                // Add marker
+                new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    title: address,
+                    icon: {
+                        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="#3b82f6">
+                                <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z"/>
+                            </svg>
+                        `),
+                        scaledSize: new google.maps.Size(30, 30)
+                    }
+                });
+            }
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            detectConnection();
+            
+            // Listen for connection changes
+            if ('connection' in navigator) {
+                navigator.connection.addEventListener('change', detectConnection);
+            }
+        });
+        
+        // Expose initMap globally for Google Maps
+        window.initMap = initMap;
+    </script>
+    
+    <!-- Google Maps API with Places library -->
+    <script async defer 
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk&libraries=places&callback=initMap">
+    </script>
+</body>
+</html>

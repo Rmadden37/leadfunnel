@@ -297,8 +297,25 @@ async function createRealFluxOverlay(dataLayersData, location) {
             }
         }, 10000);
         
-        // Add the overlay to the map
+        // Add the overlay to the map with enhanced debugging
         fluxOverlay.setMap(map);
+        
+        // Add a bright test rectangle to verify bounds are visible
+        const testRect = new google.maps.Rectangle({
+            bounds: mapBounds,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1,
+            strokeWeight: 3,
+            fillColor: '#FF0000',
+            fillOpacity: 0.2
+        });
+        testRect.setMap(map);
+        
+        // Remove test rectangle after 3 seconds
+        setTimeout(() => {
+            testRect.setMap(null);
+            console.log("🔴 Red test rectangle removed - if you saw it, bounds are correct");
+        }, 3000);
         
         console.log('🎯 GroundOverlay created with:');
         console.log('  URL:', proxiedUrl);
