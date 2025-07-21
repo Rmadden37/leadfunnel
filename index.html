@@ -26,6 +26,11 @@
     
     <!-- Float-in Animation Styles -->
     <style>
+      /* Enable smooth scrolling */
+      html {
+        scroll-behavior: smooth;
+      }
+      
       /* Subtle float-in animations */
       .animate-float-in {
         opacity: 0;
@@ -92,7 +97,7 @@
 <div class="w-full pb-12 sm:pb-16">
   <!-- Added padding-bottom for floating banner -->
   <!-- Hero Section -->
-  <header class="hero-bg text-white relative" style="background: linear-gradient(135deg, #1F3A8E 0%, #2557D7 50%, #579BF9 100%) !important;">
+  <header id="hero-form" class="hero-bg text-white relative" style="background: linear-gradient(135deg, #1F3A8E 0%, #2557D7 50%, #579BF9 100%) !important;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-12 sm:pb-16 md:pb-20 text-center">
       <!-- Hero Headline -->
       <h1 class="hero-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-tight tracking-wide mb-6 sm:mb-8 hero-text-shadow max-w-6xl mx-auto">
@@ -335,8 +340,8 @@
       <!-- Call-to-action below video -->
       <div class="text-center mt-16 animate-float-in-delay">
         <a
-          href="#solar-analysis-form"
-          class="inline-flex items-center bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white font-bold text-lg py-4 px-8 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 relative overflow-hidden group"
+          href="#hero-form"
+          class="inline-flex items-center bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white font-bold text-lg py-4 px-8 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 relative overflow-hidden group scroll-smooth"
         >
           <span class="relative z-10 flex items-center">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -466,7 +471,7 @@
           class="w-full max-w-full rounded-lg shadow-xl mt-8 animate-float-in-delay"
         />
         <a
-          href="#solar-analysis-form"
+          href="#hero-form"
           class="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold text-base sm:text-lg py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mt-6 sm:mt-8 relative overflow-hidden"
         >
           <span class="relative z-10">Get My Free Analysis →</span>
