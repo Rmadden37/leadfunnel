@@ -2,160 +2,260 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="theme-color" content="#6366f1">
+    
+    <!-- Environment Variables (populated by build process) -->
+    <meta name="env-google_maps_api_key" content="YOUR_API_KEY_HERE">
+    <meta name="env-vercel_deployment_url" content="">
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <title>Florida Solar Analysis - See Your Savings Potential</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <!-- Enhanced Polish Styles -->
+    <link rel="stylesheet" href="polish-styles.css" />
+    
+    <!-- Float-in Animation Styles -->
+    <style>
+      /* Subtle float-in animations */
+      .animate-float-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .animate-float-in.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      .animate-float-in-delay {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transition-delay: 0.2s;
+      }
+      
+      .animate-float-in-delay.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      /* Section separators */
+      .section-separator {
+        border-top: 1px solid #e5e7eb;
+      }
+      
+      /* Ripple effect keyframes */
+      @keyframes ripple {
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+      
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+    </style>
+    
+    <!-- Environment Loader Script -->
+    <script src="env-loader.js"></script>
 </head>
 <body>
 
-<!-- Mobile-width container -->
-<div class="max-w-md mx-auto shadow-2xl pb-20">
+<!-- Full-width container -->
+<div class="w-full pb-12 sm:pb-16">
   <!-- Added padding-bottom for floating banner -->
   <!-- Hero Section -->
-  <header class="hero-bg text-white">
-    <div class="container mx-auto px-6 pt-16 pb-32 text-center">
-      <h1
-        class="text-5xl md:text-6xl font-black leading-tight tracking-tight mb-4 hero-text-shadow"
-      >
-        Florida energy costs are up
-        <span class="text-yellow-300">64%</span> over the last 5 years!
+  <header class="hero-bg text-white relative" style="background: linear-gradient(135deg, #1F3A8E 0%, #2557D7 50%, #579BF9 100%) !important;">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-12 sm:pb-16 md:pb-20 text-center">
+      <!-- Hero Headline -->
+      <h1 class="hero-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-tight tracking-wide mb-6 sm:mb-8 hero-text-shadow max-w-6xl mx-auto">
+        Your Electric Bill Will Cost You 
+        <span class="text-yellow-300 block mt-3 text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black drop-shadow-2xl">$60,000+</span>
+        <span class="block mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">Over The Next 20 Years</span>
       </h1>
+
+      <!-- Urgency Message - Moved above form for Instagram users -->
+      <div class="mt-4 sm:mt-6 mb-6 sm:mb-8">
+        <p class="text-sm sm:text-base text-yellow-300 font-medium hero-text-shadow max-w-3xl mx-auto leading-relaxed">
+          Take advantage of federal incentives - <span class="font-semibold underline decoration-2 decoration-yellow-300">Act now for maximum savings!</span>
+        </p>
+      </div>
+      
+      <!-- Lead Capture Form Card -->
+      <div class="max-w-md sm:max-w-lg md:max-w-xl mx-auto">
+        <div class="bg-white rounded-xl shadow-2xl p-4 sm:p-6 md:p-8 text-gray-800 relative overflow-hidden">
+          <!-- Background accent -->
+          <div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-yellow-400 to-orange-500"></div>
+          
+          <!-- Instagram Exclusive Badge -->
+          <div class="absolute top-4 left-4 z-10">
+            <div class="flex flex-col items-center">
+              <img 
+                src="https://imgur.com/w3b9L79.png" 
+                alt="Instagram Exclusive"
+                class="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32"
+              />
+              <span class="text-sm text-black whitespace-nowrap mt-1" style="font-family: 'Times New Roman', serif;">
+                Exclusive Offer
+              </span>
+            </div>
+          </div>
+          
+          <!-- Expert Profile - Moved to top -->
+          <div class="text-center mb-4 sm:mb-6 pt-2">
+            <div class="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden ring-4 ring-blue-200 shadow-xl mx-auto mb-4">
+              <img 
+                src="https://i.imgur.com/Oqto4Sl.jpeg" 
+                alt="Ryan Madden - Solar Expert"
+                class="w-full h-full object-cover object-center"
+              />
+            </div>
+            <p class="text-lg sm:text-xl font-bold text-gray-800">Ryan Madden</p>
+            <p class="text-base sm:text-lg text-blue-600 font-semibold mb-4">9+ Years Experience</p>
+          </div>
+          
+          <!-- Simple Form -->
+          <form id="solar-analysis-form" class="space-y-4">
+            <input 
+              type="text" 
+              id="name-input"
+              name="name"
+              placeholder="First Name" 
+              class="w-full px-4 py-3 border border-gray-500 rounded-lg placeholder-gray-600"
+              required
+            />
+            
+            <input 
+              type="text" 
+              id="address-input"
+              name="address"
+              placeholder="Street Address" 
+              class="w-full px-4 py-3 border border-gray-500 rounded-lg placeholder-gray-600"
+              required
+            />
+            
+            <div class="grid grid-cols-2 gap-3">
+              <input 
+                type="text" 
+                id="city-input"
+                name="city"
+                placeholder="City" 
+                class="w-full px-4 py-3 border border-gray-500 rounded-lg placeholder-gray-600"
+                required
+              />
+              <input 
+                type="text" 
+                id="zip-input"
+                name="zip"
+                placeholder="ZIP" 
+                class="w-full px-4 py-3 border border-gray-500 rounded-lg placeholder-gray-600"
+                pattern="[0-9]{5}"
+                maxlength="5"
+                required
+              />
+            </div>
+            
+            <input 
+              type="tel" 
+              id="phone-input"
+              name="phone"
+              placeholder="Phone" 
+              class="w-full px-4 py-3 border border-gray-500 rounded-lg placeholder-gray-600"
+              required
+            />
+            
+            <input 
+              type="email" 
+              id="email-input"
+              name="email"
+              placeholder="Email" 
+              class="w-full px-4 py-3 border border-gray-500 rounded-lg placeholder-gray-600"
+              required
+            />
+            
+            <button 
+              type="submit"
+              class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold py-3 px-6 rounded-lg"
+            >
+              Get My Analysis
+            </button>
+          </form>
+          
+          <div class="mt-4 text-center">
+            <p class="text-sm text-gray-600">Or call: <a href="tel:+1-561-301-7564" class="text-blue-600">(561) 301-7564</a></p>
+          </div>
+        </div>
+      </div>
+      </div>
     </div>
   </header>
 
-  <main>
-    <!-- Section 1: Form & Trust -->
-    <div class="bg-white py-16">
-      <div class="container mx-auto px-6">
-        <!-- CTA Form Section -->
-        <div
-          id="form-section"
-          class="form-card bg-white rounded-lg p-8 md:p-10 max-w-2xl mx-auto -mt-48"
-        >
-          <div id="initial-step">
-            <h2
-              class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-2"
-            >
-              See Your Home's Solar Potential
-            </h2>
-            <p class="text-center text-gray-600 mb-6">
-              Enter your address to get a free, instant analysis of your
-              rooftop.
-            </p>
-            
-            <!-- Solar Analysis Map and Input -->
-            <div class="space-y-4">
-              <input
-                type="text"
-                id="addressInput"
-                name="address"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Start typing your address..."
-                required
-              />
-              <button
-                type="button"
-                id="searchButton"
-                class="main-cta-button w-full text-white font-bold text-lg py-4 px-6 rounded-lg shadow-lg active:scale-95"
-              >
-                Analyze Solar Potential →
-              </button>
-            </div>
-            
-            <!-- Google Map Container -->
-            <div id="map" class="w-full h-64 rounded-lg mb-6 bg-gray-200 border border-gray-300"></div>
-            
-            <!-- Solar Information Panel -->
-            <div id="solarInfo" class="mb-6">
-              <div id="insightsDetail" class="bg-white rounded-lg border border-gray-200 p-4">
-                <!-- Solar insights will be displayed here -->
-              </div>
-            </div>
-            
-            <button
-              type="button"
-              id="analyze-roof-btn"
-              class="main-cta-button w-full text-white font-bold text-lg py-4 px-6 rounded-lg mt-6 shadow-lg active:scale-95"
-            >
-              Reveal My Savings →
-            </button>
-          </div>
+  <!-- White Background Section -->
+  <section class="bg-white relative">
+    <!-- Minimal spacing for next section -->
+    <div class="py-4"></div>
+  </section>
 
-          <div id="results-step" class="hidden">
-            <div id="analysis-results" class="mb-6">
-              <!-- Map and Savings content will be injected here -->
-            </div>
-            <form id="lead-form" class="hidden">
-              <h3 class="text-xl font-bold text-center text-gray-800 mb-4">
-                Complete Your Request to Lock In Your Rate
-              </h3>
-              <div class="space-y-4">
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Full Name"
-                  required
-                />
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Email Address"
-                  required
-                />
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Phone Number"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                class="cta-button w-full bg-yellow-500 text-blue-900 font-bold text-lg py-4 px-6 rounded-lg mt-6 hover:bg-yellow-400"
-              >
-                Lock In My Rate Before Prices Rise →
-              </button>
-              <p class="text-xs text-gray-500 text-center mt-3">
-                One of our specialists will contact you with an official quote.
-              </p>
-            </form>
-            
-            <!-- Consultation Section -->
-            <div id="consultation-section" class="hidden mt-6">
-              <div class="text-center p-6 bg-green-50 rounded-lg border border-green-200">
-                <h3 class="text-xl font-bold text-green-800 mb-2">🎉 Great Solar Potential!</h3>
-                <p class="text-gray-700 mb-4">Your roof shows excellent potential for solar savings. Ready to take the next step?</p>
-                <button
-                  type="button"
-                  id="book-consultation-btn"
-                  class="cta-button bg-green-600 text-white font-bold text-lg py-3 px-6 rounded-lg hover:bg-green-700"
-                >
-                  Get Detailed Analysis →
-                </button>
-              </div>
-            </div>
-          </div>
+  <!-- Enhanced Credibility Images Section -->
+  <section class="bg-white py-16 sm:py-20 md:py-24 border-t border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top separator line -->
+      <div class="w-24 h-0.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-12 sm:mb-16"></div>
+      
+      <div class="text-center mb-12 sm:mb-16 animate-float-in">
+        <p class="text-lg sm:text-xl md:text-2xl text-gray-700 font-bold mb-2">As Featured On:</p>
+        <p class="text-sm text-gray-500">Trusted by Florida's leading media outlets</p>
+      </div>
+      <div class="flex justify-center items-center space-x-8 sm:space-x-12 md:space-x-16 lg:space-x-20 opacity-80 hover:opacity-100 transition-opacity duration-300 animate-float-in-delay">
+        <!-- Enhanced credibility media images -->
+        <div class="credibility-logo">
+          <img src="https://imgur.com/2MfXgTQ.png" alt="10 Tampa Bay News" class="h-14 sm:h-18 md:h-22 lg:h-28 max-w-[100px] sm:max-w-[130px] md:max-w-[160px] lg:max-w-none grayscale hover:grayscale-0 transition-all duration-300 filter hover:brightness-110">
         </div>
+        <div class="credibility-logo">
+          <img src="https://imgur.com/NyWIFQ8.png" alt="ABC Action News" class="h-14 sm:h-18 md:h-22 lg:h-28 max-w-[100px] sm:max-w-[130px] md:max-w-[160px] lg:max-w-none grayscale hover:grayscale-0 transition-all duration-300 filter hover:brightness-110">
+        </div>
+        <div class="credibility-logo">
+          <img src="https://imgur.com/DYvyrpF.png" alt="FOX 13 News" class="h-14 sm:h-18 md:h-22 lg:h-28 max-w-[100px] sm:max-w-[130px] md:max-w-[160px] lg:max-w-none grayscale hover:grayscale-0 transition-all duration-300 filter hover:brightness-110">
+        </div>
+        <div class="credibility-logo">
+          <img src="https://imgur.com/iKstT5c.png" alt="Tampa Bay Times" class="h-14 sm:h-18 md:h-22 lg:h-28 max-w-[100px] sm:max-w-[130px] md:max-w-[160px] lg:max-w-none grayscale hover:grayscale-0 transition-all duration-300 filter hover:brightness-110">
+        </div>
+      </div>
+      
+      <!-- Bottom separator for enhanced spacing -->
+      <div class="w-24 h-0.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mt-12 sm:mt-16"></div>
+    </div>
+  </section>
 
+  <main role="main">
+    <!-- Section 1: Trust & Social Proof -->
+    <section class="bg-gray-50 py-20 sm:py-24 md:py-28 border-t border-gray-200" aria-labelledby="trust-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Trust Block -->
-        <div class="max-w-4xl mx-auto mt-16 text-center">
-          <div class="grid grid-cols-2 gap-8 text-gray-700">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-20 sm:mb-24 animate-float-in">
+            <h2 id="trust-section" class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 sm:mb-8">
+              Florida's Most Trusted <br>
+              <span class="text-blue-600">Solar Installation Partner</span>
+            </h2>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 md:gap-16 text-center animate-float-in-delay">
             <div class="flex flex-col items-center">
               <svg
-                class="w-12 h-12 text-blue-600 mb-3"
+                class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-blue-600 mb-4 sm:mb-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -168,11 +268,11 @@
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 ></path>
               </svg>
-              <p class="font-semibold">Freedom Forever Certified Installer</p>
+              <p class="font-semibold text-sm sm:text-base md:text-lg">NABCEP Certified Installer</p>
             </div>
             <div class="flex flex-col items-center">
               <svg
-                class="w-12 h-12 text-blue-600 mb-3"
+                class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-blue-600 mb-4 sm:mb-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -191,11 +291,11 @@
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                 ></path>
               </svg>
-              <p class="font-semibold">Serving Tampa Bay & Neighboring Areas</p>
+              <p class="font-semibold text-sm sm:text-base md:text-lg">Serving Tampa Bay & Neighboring Areas</p>
             </div>
             <div class="flex flex-col items-center">
               <svg
-                class="w-12 h-12 text-blue-600 mb-3"
+                class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-blue-600 mb-4 sm:mb-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -208,11 +308,11 @@
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 ></path>
               </svg>
-              <p class="font-semibold">25-Year Warranty on Equipment</p>
+              <p class="font-semibold text-sm sm:text-base md:text-lg">25-Year Warranty on Equipment & Service</p>
             </div>
             <div class="flex flex-col items-center">
               <svg
-                class="w-12 h-12 text-blue-600 mb-3"
+                class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-blue-600 mb-4 sm:mb-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -225,7 +325,7 @@
                   d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                 ></path>
               </svg>
-              <p class="font-semibold">Over 2,000 Florida Home Installs</p>
+              <p class="font-semibold text-xs sm:text-base">Over 2,000 Florida Home Installs</p>
             </div>
           </div>
         </div>
@@ -233,53 +333,58 @@
     </div>
 
     <!-- Section 2: Chart -->
-    <div class="bg-gray-50 py-16">
-      <div class="container mx-auto px-6 text-center">
+    <section class="bg-white py-16 sm:py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2
-          class="text-3xl font-bold text-gray-900 mb-4 tracking-tight relative pb-2"
+          class="text-2xl sm:text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight relative pb-4 animate-float-in"
         >
-          Power Costs Are Scheduled To Increase In The Future
+          <span class="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Power Costs Are Scheduled To Increase</span> 
+          <span class="block text-xl sm:text-3xl md:text-4xl text-gray-700 mt-2">In The Future</span>
           <span
-            class="absolute bottom-0 left-1/2 -translate-x-1/2 w-40 h-1 bg-indigo-600 rounded"
+            class="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 sm:w-48 h-2 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full"
           ></span>
         </h2>
         <img
           src="https://i.imgur.com/ZSO5q0h.png"
           alt="A graph showing the average electric bill from TECO, Duke Energy, and FPL rising from 2020 to 2025."
-          class="rounded-lg shadow-xl mt-8"
+          class="w-full max-w-full rounded-lg shadow-xl mt-8 animate-float-in-delay"
         />
         <a
-          href="#form-section"
-          class="inline-block bg-indigo-600 text-white font-bold text-lg py-3 px-8 rounded-full shadow-lg hover:bg-indigo-700 transition-transform transform hover:-translate-y-1 mt-8"
+          href="#solar-analysis-form"
+          class="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold text-base sm:text-lg py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 mt-6 sm:mt-8 relative overflow-hidden"
         >
-          Protect yourself from future rate hikes
+          <span class="relative z-10">Get My Free Analysis →</span>
+          <div class="absolute inset-0 bg-gradient-to-r from-yellow-500 to-orange-600 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
         </a>
       </div>
-    </div>
+    </section>
 
     <!-- Section 3: Value Stack -->
-    <div class="bg-white py-16">
-      <div class="container mx-auto px-6">
-        <div
-          class="bg-white rounded-lg p-8 md:p-12 max-w-4xl mx-auto text-center"
-        >
-          <h2 class="text-3xl font-bold text-gray-800 mb-4">
-            The Process is Simple & The Value is Clear
-          </h2>
-          <p class="text-gray-700 leading-relaxed max-w-2xl mx-auto mb-12">
-            An expiring federal program allows you to swap your rising energy
-            payment for a lower, fixed payment that you own. We handle
-            everything. Here's exactly what's included:
-          </p>
+    <section class="bg-gray-50 py-16 sm:py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto">
+          <!-- Section Header with improved typography -->
+          <div class="text-center mb-16 animate-float-in">
+            <div class="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              ⚡ Federal Program Expiring Soon
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+              The Process is Simple &<br>
+              <span class="text-blue-600">The Value is Clear</span>
+            </h2>
+            <p class="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
+              An expiring federal program allows you to swap your rising energy
+              payment for a lower, fixed payment that you own. We handle
+              everything. Here's exactly what's included:
+            </p>
+          </div>
 
-          <div class="space-y-4">
-            <!-- Benefit Card 1 -->
-            <div
-              class="bg-blue-50 border border-blue-200 rounded-lg p-6 flex items-center space-x-4 text-left"
-            >
-              <div class="flex-shrink-0 bg-yellow-400 p-3 rounded-full">
+          <div class="grid md:grid-cols-1 gap-6 max-w-4xl mx-auto">
+            <!-- Enhanced Benefit Card 1 -->
+            <div class="bg-white border border-gray-200 rounded-xl p-8 flex items-start space-x-6 text-left shadow-lg hover:shadow-xl transition-all duration-300 benefit-card">
+              <div class="flex-shrink-0 bg-gradient-to-br from-yellow-400 to-orange-500 p-4 rounded-xl shadow-lg">
                 <svg
-                  class="w-6 h-6 text-yellow-800"
+                  class="w-8 h-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -291,24 +396,21 @@
                     stroke-width="2"
                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01"
                   ></path>
-                </svg>
               </div>
-              <div>
-                <h4 class="font-bold text-lg text-gray-800">
+              <div class="flex-1">
+                <h4 class="font-bold text-xl text-gray-900 mb-2">
                   Expiring Federal Program
                 </h4>
-                <p class="text-gray-600">
+                <p class="text-gray-600 text-lg leading-relaxed">
                   Lock in today's lower costs before the federal subsidy ends.
                 </p>
               </div>
             </div>
-            <!-- Benefit Card 2 -->
-            <div
-              class="bg-blue-50 border border-blue-200 rounded-lg p-6 flex items-center space-x-4 text-left"
-            >
-              <div class="flex-shrink-0 bg-green-400 p-3 rounded-full">
+            <!-- Enhanced Benefit Card 2 -->
+            <div class="bg-white border border-gray-200 rounded-xl p-8 flex items-start space-x-6 text-left shadow-lg hover:shadow-xl transition-all duration-300 benefit-card">
+              <div class="flex-shrink-0 bg-gradient-to-br from-green-400 to-emerald-500 p-4 rounded-xl shadow-lg">
                 <svg
-                  class="w-6 h-6 text-green-800"
+                  class="w-8 h-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -363,12 +465,12 @@
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Section 4: Testimonial -->
-    <div class="bg-gray-50 py-16">
-      <div class="container mx-auto px-6 text-center">
-        <div class="max-w-3xl mx-auto">
+    <section class="bg-white py-16 sm:py-20 border-t border-gray-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="max-w-3xl mx-auto animate-float-in">
           <div class="bg-blue-600 text-white rounded-lg p-10 shadow-lg">
             <p class="text-3xl italic leading-relaxed">
               “I locked in my rate just in time. My energy bill used to be $280
@@ -380,13 +482,13 @@
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Section 5: Hurricane -->
-    <div class="bg-white py-16">
-      <div class="container mx-auto px-6">
+    <section class="bg-gray-50 py-16 sm:py-20 border-t border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div
-          class="rounded-lg shadow-lg p-8 md:p-12 max-w-4xl mx-auto border-l-4 border-red-500"
+          class="rounded-lg shadow-lg p-8 md:p-12 max-w-4xl mx-auto border-l-4 border-red-500 animate-float-in"
         >
           <h3 class="text-4xl font-bold text-gray-800 mb-4">
             🌀 Don't Get Caught in the Dark
@@ -410,16 +512,16 @@
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Section 6: FAQ -->
-    <div class="bg-gray-50 py-16">
-      <div class="container mx-auto px-6">
+    <section class="bg-white py-16 sm:py-20 border-t border-gray-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-4xl mx-auto">
-          <h3 class="text-4xl font-bold text-center text-gray-800 mb-10">
+          <h3 class="text-4xl font-bold text-center text-gray-800 mb-10 animate-float-in">
             Frequently Asked Questions
           </h3>
-          <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+          <div class="bg-white rounded-lg shadow-lg p-6 md:p-8 animate-float-in-delay">
             <div id="faq-list">
               <div class="faq-item py-4">
                 <h4 class="text-lg font-semibold text-gray-800 mb-2">
@@ -459,42 +561,18 @@
                 </p>
               </div>
             </div>
-            <!-- AI FAQ Input -->
-            <div class="mt-6 pt-6 border-t border-gray-200">
-              <label
-                for="ai-faq-question"
-                class="block text-lg font-semibold text-gray-800 mb-2"
-                >Have another question?</label
-              >
-              <div class="flex gap-2">
-                <input
-                  type="text"
-                  id="ai-faq-question"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="Type your question here..."
-                />
-                <button
-                  type="button"
-                  id="ask-ai-btn"
-                  class="bg-indigo-600 text-white font-bold py-3 px-5 rounded-lg hover:bg-indigo-700 transition-colors"
-                >
-                  ✨ Ask
-                </button>
-              </div>
-              <div id="ai-faq-response" class="mt-4"></div>
-            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Section 7: Final CTA -->
-    <div class="bg-white py-16">
-      <div class="container mx-auto px-6">
+    <section class="bg-gray-50 py-16 sm:py-20 border-t border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div
-          class="text-center bg-white py-16 rounded-lg shadow-lg border-t-4 border-yellow-500"
+          class="text-center bg-white py-16 rounded-lg shadow-lg border-t-4 border-yellow-500 animate-float-in"
         >
-          <div class="container mx-auto px-6">
+          <div class="max-w-4xl mx-auto px-6">
             <h2 class="text-4xl font-bold text-gray-800 mb-4">
               Your Last Chance to Lock In 2025 Rates.
             </h2>
@@ -503,15 +581,16 @@
               Get your free analysis to secure today's pricing.
             </p>
             <a
-              href="#form-section"
-              class="cta-button inline-block bg-yellow-500 text-blue-900 font-bold text-xl py-4 px-8 rounded-lg hover:bg-yellow-400"
+              href="tel:+1-561-301-7564"
+              class="cta-button inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold text-xl py-4 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden"
             >
-              Reveal My Savings →
+              <span class="relative z-10">Call Now For My Savings →</span>
+              <div class="absolute inset-0 bg-gradient-to-r from-yellow-500 to-orange-600 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
             </a>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   </main>
 
   <!-- Footer -->
@@ -531,29 +610,157 @@
 
 <!-- Floating Urgency Banner -->
 <div
-  class="floating-banner fixed bottom-0 left-0 right-0 bg-red-800 text-white p-2 shadow-2xl z-50"
+  class="floating-banner fixed bottom-0 left-0 right-0 bg-red-800 text-white py-1 px-2 shadow-2xl z-40"
 >
   <div class="max-w-md mx-auto flex items-center justify-center text-center">
-    <p class="text-sm font-semibold">
-      30% Federal Program Ends in
-      <span id="days-remaining" class="font-bold text-yellow-300">--</span>
-      Days!
+    <p class="text-xs sm:text-sm font-semibold">
+      Federal Solar Incentives Available - 
+      <span class="font-bold text-yellow-300">Act Now!</span>
     </p>
   </div>
 </div>
 
-<!-- GeoTIFF Library -->
-<script src="https://unpkg.com/geotiff@2.0.7/dist/geotiff.min.js"></script>
-
-<!-- Solar Maps Implementation (loaded before Google Maps) -->
-<script src="solar_maps.js"></script>
-
-<!-- Google Maps JavaScript API with Places and Geometry libraries -->
-<script async defer 
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzcUXYvRZVWAMasN93T9radVmiZVnaflk&libraries=places,geometry&callback=initMap">
-</script>
+<!-- Form Handler Script -->
+<script src="form-handler.js"></script>
 
 <!-- Original Animation Script -->
-<script src="animation.js"></script>
+
+
+<!-- Enhanced Hero & Credibility Script -->
+
+
+<!-- Enhanced Polish & UX Script -->
+<script>
+// Enhanced Form Polish & Interactions
+document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced button interactions
+    const ctaButtons = document.querySelectorAll('.cta-button');
+    
+    ctaButtons.forEach(button => {
+        // Add ripple effect
+        button.addEventListener('click', function(e) {
+            const ripple = document.createElement('div');
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                background: rgba(255,255,255,0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+            `;
+            
+            button.style.position = 'relative';
+            button.style.overflow = 'hidden';
+            button.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+    
+    // Enhanced form validation with smooth transitions
+    const formInputs = document.querySelectorAll('input, select, textarea');
+    
+    formInputs.forEach(input => {
+        // Focus effects
+        input.addEventListener('focus', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 8px 20px rgba(99, 102, 241, 0.15)';
+            this.style.borderColor = '#6366f1';
+            this.style.transition = 'all 0.3s ease';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+            
+            // Validation feedback
+            if (this.value && this.checkValidity()) {
+                this.style.borderColor = '#10b981';
+                this.style.backgroundColor = '#f0fdf4';
+            } else if (this.value && !this.checkValidity()) {
+                this.style.borderColor = '#ef4444';
+                this.style.backgroundColor = '#fef2f2';
+            } else {
+                this.style.borderColor = '#d1d5db';
+                this.style.backgroundColor = 'white';
+            }
+        });
+    });
+    
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Enhanced loading states for forms
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitButton = this.querySelector('[type="submit"]');
+            if (submitButton) {
+                const originalText = submitButton.innerHTML;
+                submitButton.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <div style="width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px;"></div>
+                        Processing...
+                    </div>
+                `;
+                submitButton.disabled = true;
+                
+                // Reset after 3 seconds (replace with actual form handling)
+                setTimeout(() => {
+                    submitButton.innerHTML = originalText;
+                    submitButton.disabled = false;
+                }, 3000);
+            }
+        });
+    });
+    
+    // Intersection Observer for fade-in animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+            }
+        });
+    }, observerOptions);
+    
+    // Observe elements for fade-in animations
+    document.querySelectorAll('.animate-float-in, .animate-float-in-delay').forEach(el => {
+        observer.observe(el);
+    });
+});
+</script>
+
+<!-- Simple animation script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced animations and interactions are already handled above
+    console.log('Solar landing page loaded successfully!');
+});
+</script>
 </body>
 </html>

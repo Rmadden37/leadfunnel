@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: transform 0.2s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        #results {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .loading {
+            color: #666;
+        }
+        
+        .success {
+            color: #27ae60;
+        }
+        
+        .error {
+            color: #e74c3c;
+        }
+        
+        .info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔧 Google Sheets Integration Test</h1>
+        
+        <div class="info">
+            <strong>📝 Instructions:</strong>
+            <br>1. Click "Test Sheets Connection" to verify Google Sheets access
+            <br>2. Click "Test Complete Form Submission" to test the full flow
+            <br>3. Check your Google Sheets and email for results
+            <br>4. View the detailed logs below
+        </div>
+        
+        <div class="test-section">
+            <h3>🔍 Google Sheets Connectivity Test</h3>
+            <p>This will test basic Google Sheets read/write access without sending emails.</p>
+            <button onclick="testSheetsOnly()" id="sheetsBtn">Test Sheets Connection</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>📧 Complete Form Submission Test</h3>
+            <p>This will test the complete flow: Google Sheets + Email notifications.</p>
+            <button onclick="testCompleteSubmission()" id="completeBtn">Test Complete Form Submission</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 Test Results</h3>
+            <div id="results">Click a test button above to see results...</div>
+        </div>
+    </div>
+
+    <script>
+        const googleAppsScriptUrl = 'https://script.google.com/macros/s/AKfycby6osA7_S11crjPH_xNCmN5nTyftigdTkJZOw4GC7N6jVUgUgWqPX8Ay4347c_ZUTdO/exec';
+        
+        function logResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'loading' ? 'loading' : '';
+            results.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        function disableButtons() {
+            document.getElementById('sheetsBtn').disabled = true;
+            document.getElementById('completeBtn').disabled = true;
+        }
+        
+        function enableButtons() {
+            document.getElementById('sheetsBtn').disabled = false;
+            document.getElementById('completeBtn').disabled = false;
+        }
+        
+        async function testSheetsOnly() {
+            logResult('🔍 Starting Google Sheets connectivity test...', 'loading');
+            disableButtons();
+            
+            try {
+                const response = await fetch(googleAppsScriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'testSheetsOnly'
+                    })
+                });
+                
+                const result = await response.text();
+                logResult(`✅ Sheets test response: ${result}`, 'success');
+                
+            } catch (error) {
+                logResult(`❌ Sheets test failed: ${error.message}`, 'error');
+            }
+            
+            enableButtons();
+        }
+        
+        async function testCompleteSubmission() {
+            logResult('📧 Starting complete form submission test...', 'loading');
+            disableButtons();
+            
+            const testData = {
+                name: 'Test User from Sheets Test',
+                address: '789 Test Lane',
+                city: 'Miami',
+                zip: '33101',
+                phone: '(305) 555-9876',
+                email: 'sheets.test@example.com',
+                source: 'Sheets Test Page',
+                page_url: window.location.href,
+                referrer: document.referrer || 'Direct',
+                user_agent: navigator.userAgent,
+                timestamp: new Date().toLocaleString()
+            };
+            
+            try {
+                logResult('📤 Sending test data to Google Apps Script...', 'loading');
+                
+                const response = await fetch(googleAppsScriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const result = await response.text();
+                logResult(`✅ Form submission response: ${result}`, 'success');
+                logResult('📨 Check your email and Google Sheets for the test data!', 'success');
+                
+            } catch (error) {
+                logResult(`❌ Complete test failed: ${error.message}`, 'error');
+            }
+            
+            enableButtons();
+        }
+        
+        // Clear results on page load
+        logResult('🚀 Test page loaded. Ready to test Google Sheets integration!');
+    </script>
+</body>
+</html>
