@@ -4,6 +4,9 @@ class SolarFormHandler {
         // ✅ CONFIGURED: Google Apps Script Web App URL (Updated Deployment)
         this.googleAppsScriptUrl = 'https://script.google.com/macros/s/AKfycbw0QXX7EMEvP_RNa-o6DmV9mQkW1z2qO50YKVXvz4MnHLTQ0qNY1A-lUH9-8FMirFJN/exec';
         
+        // Duplicate prevention
+        this.submittedData = new Set();
+        
         this.init();
     }
 
@@ -98,22 +101,17 @@ class SolarFormHandler {
 
     async submitToGoogleAppsScript(data) {
         try {
-            console.log('Submitting to Google Apps Script:', data);
+            // Create a unique hash for this submission to prevent duplicates
+            const submissionHash = this.createSubmissionHash(data);
             
-            // First, try to test connectivity with a GET request
-            try {
-                const testResponse = await fetch(`${this.googleAppsScriptUrl}?test=connectivity`);
-                if (testResponse.ok) {
-                    const testData = await testResponse.text();
-                    console.log('Google Apps Script connectivity test passed:', testData);
-                } else {
-                    console.warn('Google Apps Script connectivity test failed, but continuing with POST...');
-                }
-            } catch (testError) {
-                console.warn('Google Apps Script connectivity test error (continuing with POST):', testError);
+            if (this.submittedData.has(submissionHash)) {
+                console.log('Duplicate submission prevented');
+                return true;
             }
             
-            // Method 1: Standard POST with no-cors (current approach)
+            console.log('Submitting to Google Apps Script:', data);
+            
+            // Method 1: Standard POST with no-cors (primary method)
             const response = await fetch(this.googleAppsScriptUrl, {
                 method: 'POST',
                 mode: 'no-cors', // Required for Google Apps Script
@@ -125,24 +123,19 @@ class SolarFormHandler {
 
             console.log('Form submitted to Google Apps Script (no-cors mode) - Lead should be saved and emails sent');
             
-            // Method 2: Fallback using dynamic script injection (JSONP-style)
-            // This can bypass CORS restrictions for some scenarios
-            setTimeout(() => {
-                try {
-                    this.submitViaScriptTag(data);
-                } catch (fallbackError) {
-                    console.warn('Fallback submission method also failed:', fallbackError);
-                }
-            }, 1000);
+            // Mark this submission as completed
+            this.submittedData.add(submissionHash);
             
+            // With no-cors mode, we can't verify the response, but the request was sent
+            // Only use fallback method if this actually throws an error
             return true;
             
         } catch (error) {
             console.error('Google Apps Script submission failed:', error);
             
-            // Try alternative submission method
+            // Only now try alternative submission method as true fallback
             try {
-                console.log('Trying alternative submission method...');
+                console.log('Primary method failed, trying alternative submission method...');
                 await this.submitViaScriptTag(data);
                 return true;
             } catch (altError) {
@@ -150,6 +143,12 @@ class SolarFormHandler {
                 throw error;
             }
         }
+    }
+
+    // Create a unique hash for submission data to prevent duplicates
+    createSubmissionHash(data) {
+        const keyData = `${data.email}-${data.phone}-${data.address}-${Math.floor(Date.now() / 30000)}`; // 30 second window
+        return btoa(keyData).substring(0, 16); // Simple hash
     }
 
     // Alternative submission method using script tag injection
