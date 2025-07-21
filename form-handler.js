@@ -1,205 +1,206 @@
 // Solar Form Handler with Google Apps Script Integration
 class SolarFormHandler {
     constructor() {
-        // ✅ CONFIGURED: Google Apps Script Web App URL (Updated Deployment)
-        this.googleAppsScriptUrl = 'https://script.google.com/macros/s/AKfycbw0QXX7EMEvP_RNa-o6DmV9mQkW1z2qO50YKVXvz4MnHLTQ0qNY1A-lUH9-8FMirFJN/exec';
-        
-        // Duplicate prevention
-        this.submittedData = new Set();
-        
+        // Your Google Apps Script Web App URL - GOOGLE DRIVE HTML EMAIL VERSION
+        // Deployment ID: AKfycbyGOasfnJJecpWNrRNK7KcEYTW7FHxNMfr9tjExhEdQZF8xkNfBvuRB9H1oVgktogoi
+        this.googleAppsScriptUrl = 'https://script.google.com/macros/s/AKfycbyGOasfnJJecpWNrRNK7KcEYTW7FHxNMfr9tjExhEdQZF8xkNfBvuRB9H1oVgktogoi/exec';
         this.init();
     }
 
     init() {
-        // Main hero form
-        const mainForm = document.getElementById('solar-analysis-form');
-        if (mainForm) {
-            mainForm.addEventListener('submit', (e) => this.handleFormSubmit(e, 'hero-form'));
-        }
-
-        // Update all CTA buttons to trigger form or call
-        this.setupCTAButtons();
+        // Initialize form handling when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            this.setupForm();
+            this.setupCTAButtons();
+        });
     }
 
-    async handleFormSubmit(event, source = 'unknown') {
-        event.preventDefault();
+    setupForm() {
+        const form = document.getElementById('solar-analysis-form');
+        if (form) {
+            form.addEventListener('submit', (e) => this.handleSubmit(e));
+            console.log('✅ Solar form handler initialized');
+        } else {
+            console.log('⚠️ Solar form not found on this page');
+        }
+    }
+
+    async handleSubmit(e) {
+        e.preventDefault();
         
-        const form = event.target;
-        const submitBtn = form.querySelector('[type="submit"]');
-        const originalText = submitBtn.innerHTML;
+        const form = e.target;
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
         
         // Show loading state
-        this.setLoadingState(submitBtn, true);
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Submitting...';
+        submitBtn.disabled = true;
         
         try {
             // Collect form data
-            const formData = this.collectFormData(form, source);
-            
-            // Validate required fields
-            if (!this.validateFormData(formData)) {
-                throw new Error('Please complete all fields with valid information');
+            const data = {
+                name: formData.get('name')?.trim() || '',
+                address: formData.get('address')?.trim() || '',
+                city: formData.get('city')?.trim() || '',
+                zip: formData.get('zip')?.trim() || '',
+                phone: formData.get('phone')?.trim() || '',
+                email: formData.get('email')?.trim() || '',
+                source: 'Website Form',
+                timestamp: new Date().toISOString(),
+                page_url: window.location.href,
+                referrer: document.referrer || 'Direct',
+                user_agent: navigator.userAgent.substring(0, 200) // Limit length
+            };
+
+            console.log('🚀 Submitting form data:', data);
+
+            // Validate data
+            if (!this.validateFormData(data)) {
+                throw new Error('Please fill in all required fields correctly');
             }
 
-            // Submit to Google Apps Script (saves to sheets + sends all emails automatically)
-            await this.submitToGoogleAppsScript(formData);
+            // Submit to Google Apps Script
+            await this.submitToGoogleSheets(data);
             
-            // Show success and redirect to thank you page
-            this.showSuccessMessage();
-            
-            // Redirect to thank you page after 1.5 seconds
-            setTimeout(() => {
-                window.location.href = 'thank-you.html';
-            }, 1500);
+            // Success - redirect to thank you page
+            console.log('✅ Form submitted successfully');
+            window.location.href = 'thank-you.html';
             
         } catch (error) {
-            console.error('Form submission error:', error);
-            this.showErrorMessage(error.message);
+            console.error('❌ Form submission error:', error);
+            alert('There was an error submitting your form. Please try again or call (561) 301-7564.');
             
-            // Fallback to thank you page after 1.5 seconds
-            setTimeout(() => {
-                window.location.href = 'thank-you.html';
-            }, 1500);
-        } finally {
-            // Reset button after 4 seconds
-            setTimeout(() => {
-                this.setLoadingState(submitBtn, false, originalText);
-            }, 4000);
+            // Reset button
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
         }
-    }
-
-    collectFormData(form, source) {
-        const formData = new FormData(form);
-        const data = {
-            name: formData.get('name') || '',
-            address: formData.get('address') || '',
-            city: formData.get('city') || '',
-            zip: formData.get('zip') || '',
-            phone: formData.get('phone') || '',
-            email: formData.get('email') || '',
-            source: source,
-            timestamp: new Date().toLocaleString(),
-            page_url: window.location.href,
-            user_agent: navigator.userAgent.substring(0, 100), // Truncate for sheets
-            referrer: document.referrer || 'Direct'
-        };
-
-        return data;
     }
 
     validateFormData(data) {
         const phoneRegex = /^[\+]?[1-9]?[\d\s\-\(\)]{10,}$/;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         
-        return data.name && data.name.trim().length >= 2 &&
-               data.address && data.address.trim().length >= 10 &&
-               data.city && data.city.trim().length >= 2 && 
-               data.zip && data.zip.trim().length === 5 && 
+        return data.name && data.name.length >= 2 &&
+               data.address && data.address.length >= 10 &&
+               data.city && data.city.length >= 2 && 
+               data.zip && data.zip.length === 5 && 
                /^\d{5}$/.test(data.zip) &&
                data.phone && phoneRegex.test(data.phone) &&
                data.email && emailRegex.test(data.email);
     }
 
-    async submitToGoogleAppsScript(data) {
-        try {
-            // Create a unique hash for this submission to prevent duplicates
-            const submissionHash = this.createSubmissionHash(data);
-            
-            if (this.submittedData.has(submissionHash)) {
-                console.log('Duplicate submission prevented');
-                return true;
-            }
-            
-            console.log('Submitting to Google Apps Script:', data);
-            
-            // Method 1: Standard POST with no-cors (primary method)
-            const response = await fetch(this.googleAppsScriptUrl, {
-                method: 'POST',
-                mode: 'no-cors', // Required for Google Apps Script
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
+    async submitToGoogleSheets(data) {
+        console.log('📤 Sending to Google Apps Script...');
+        
+        // Multiple submission methods for bulletproof delivery
+        const methods = [
+            () => this.submitViaFetch(data),
+            () => this.submitViaFetchNoCorsFallback(data),
+            () => this.submitViaJsonp(data)
+        ];
 
-            console.log('Form submitted to Google Apps Script (no-cors mode) - Lead should be saved and emails sent');
-            
-            // Mark this submission as completed
-            this.submittedData.add(submissionHash);
-            
-            // With no-cors mode, we can't verify the response, but the request was sent
-            // Only use fallback method if this actually throws an error
-            return true;
-            
-        } catch (error) {
-            console.error('Google Apps Script submission failed:', error);
-            
-            // Only now try alternative submission method as true fallback
+        let lastError;
+        
+        for (let i = 0; i < methods.length; i++) {
             try {
-                console.log('Primary method failed, trying alternative submission method...');
-                await this.submitViaScriptTag(data);
-                return true;
-            } catch (altError) {
-                console.error('Alternative submission method also failed:', altError);
-                throw error;
+                console.log(`🔄 Trying submission method ${i + 1}...`);
+                await methods[i]();
+                console.log(`✅ Submission method ${i + 1} succeeded`);
+                return; // Success!
+            } catch (error) {
+                console.log(`❌ Method ${i + 1} failed:`, error.message);
+                lastError = error;
+                
+                // Wait a bit before trying next method
+                if (i < methods.length - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
             }
         }
+        
+        // If all methods failed
+        throw new Error(`All submission methods failed. Last error: ${lastError?.message}`);
     }
 
-    // Create a unique hash for submission data to prevent duplicates
-    createSubmissionHash(data) {
-        const keyData = `${data.email}-${data.phone}-${data.address}-${Math.floor(Date.now() / 30000)}`; // 30 second window
-        return btoa(keyData).substring(0, 16); // Simple hash
+    async submitViaFetch(data) {
+        const response = await fetch(this.googleAppsScriptUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+            mode: 'cors'
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        
+        if (result.status !== 'success') {
+            throw new Error(result.message || 'Unknown server error');
+        }
+        
+        return result;
     }
 
-    // Alternative submission method using script tag injection
-    submitViaScriptTag(data) {
+    async submitViaFetchNoCorsFallback(data) {
+        // No-cors mode as fallback
+        await fetch(this.googleAppsScriptUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+            mode: 'no-cors'
+        });
+        
+        // no-cors doesn't return readable response, assume success
+        console.log('📤 No-CORS submission completed (response not readable)');
+    }
+
+    async submitViaJsonp(data) {
         return new Promise((resolve, reject) => {
-            try {
-                // Create a unique callback name
-                const callbackName = 'gasCallback_' + Date.now();
+            const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+            
+            window[callbackName] = function(response) {
+                delete window[callbackName];
+                document.body.removeChild(script);
                 
-                // Create the callback function
-                window[callbackName] = function(response) {
-                    console.log('Script tag submission response:', response);
-                    // Clean up
-                    document.head.removeChild(script);
-                    delete window[callbackName];
+                if (response.status === 'success') {
                     resolve(response);
-                };
-                
-                // Create script element
-                const script = document.createElement('script');
-                script.onerror = function() {
-                    console.log('Script tag submission completed (no response expected)');
-                    // Clean up
-                    document.head.removeChild(script);
+                } else {
+                    reject(new Error(response.message || 'JSONP submission failed'));
+                }
+            };
+            
+            // Build URL with parameters
+            const params = new URLSearchParams({
+                ...data,
+                method: 'jsonp',
+                callback: callbackName
+            });
+            
+            const script = document.createElement('script');
+            script.src = `${this.googleAppsScriptUrl}?${params.toString()}`;
+            script.onerror = () => {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                reject(new Error('JSONP script failed to load'));
+            };
+            
+            document.body.appendChild(script);
+            
+            // Timeout after 30 seconds
+            setTimeout(() => {
+                if (window[callbackName]) {
                     delete window[callbackName];
-                    resolve(true);
-                };
-                
-                // Build the URL with data as query parameters
-                const params = new URLSearchParams();
-                Object.keys(data).forEach(key => {
-                    params.append(key, data[key]);
-                });
-                params.append('callback', callbackName);
-                params.append('method', 'jsonp');
-                
-                script.src = `${this.googleAppsScriptUrl}?${params.toString()}`;
-                document.head.appendChild(script);
-                
-                // Timeout after 10 seconds
-                setTimeout(() => {
-                    if (document.head.contains(script)) {
-                        document.head.removeChild(script);
-                        delete window[callbackName];
-                        resolve(true); // Assume success since we can't verify
-                    }
-                }, 10000);
-                
-            } catch (error) {
-                reject(error);
-            }
+                    document.body.removeChild(script);
+                    reject(new Error('JSONP request timeout'));
+                }
+            }, 30000);
         });
     }
 
@@ -230,10 +231,14 @@ class SolarFormHandler {
 
     async submitQuickLead(address, buttonText) {
         const data = {
+            name: 'Quick Lead',
             address: address,
+            city: '',
+            zip: '',
             phone: '',
+            email: '',
             source: `CTA-Button: ${buttonText}`,
-            timestamp: new Date().toLocaleString(),
+            timestamp: new Date().toISOString(),
             page_url: window.location.href,
             user_agent: navigator.userAgent.substring(0, 100),
             referrer: document.referrer || 'Direct'
@@ -241,90 +246,15 @@ class SolarFormHandler {
 
         try {
             await this.submitToGoogleSheets(data);
-            console.log('Quick lead submitted');
+            console.log('✅ Quick lead submitted');
         } catch (error) {
-            console.error('Quick lead submission error:', error);
+            console.error('❌ Quick lead submission error:', error);
         }
-    }
-
-    setLoadingState(button, isLoading, originalText = '') {
-        if (isLoading) {
-            button.innerHTML = `
-                <div style="display: flex; align-items: center; justify-content: center;">
-                    <div style="width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px;"></div>
-                    <span>Analyzing Your Home...</span>
-                </div>
-            `;
-            button.disabled = true;
-        } else {
-            button.innerHTML = originalText;
-            button.disabled = false;
-        }
-    }
-
-    showSuccessMessage() {
-        // Create success notification
-        const notification = document.createElement('div');
-        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
-        notification.innerHTML = `
-            <div class="flex items-center">
-                <svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                <div>
-                    <div class="font-bold">Analysis Complete!</div>
-                    <div class="text-sm">Calling you now...</div>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Animate in
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
-        
-        // Remove after 4 seconds
-        setTimeout(() => {
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => notification.remove(), 300);
-        }, 4000);
-    }
-
-    showErrorMessage(message) {
-        // Create error notification
-        const notification = document.createElement('div');
-        notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
-        notification.innerHTML = `
-            <div class="flex items-center">
-                <svg class="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-                <div>
-                    <div class="font-bold">Submission Issue</div>
-                    <div class="text-sm">Calling you directly instead...</div>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Animate in
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
     }
 }
 
-// Initialize form handler when DOM loads
-document.addEventListener('DOMContentLoaded', () => {
-    const formHandler = new SolarFormHandler();
-    console.log('Solar Form Handler initialized');
-});
+// Initialize the form handler
+const solarFormHandler = new SolarFormHandler();
+
+// Export for testing
+window.SolarFormHandler = SolarFormHandler;
