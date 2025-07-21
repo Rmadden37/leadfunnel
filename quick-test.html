@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Deployment Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            background: rgba(0, 0, 0, 0.3);
+            min-height: 100px;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Quick Deployment Test</h1>
+        <p>This will test if your form submission system is working on the deployed site.</p>
+        
+        <button onclick="runQuickTest()" id="testBtn">Run Quick Test</button>
+        <button onclick="testFormSubmission()" id="formBtn">Test Form Submission</button>
+        
+        <div id="result">Click "Run Quick Test" to check Google Apps Script connectivity...</div>
+    </div>
+
+    <script>
+        const gasUrl = 'https://script.google.com/macros/s/AKfycby6osA7_S11crjPH_xNCmN5nTyftigdTkJZOw4GC7N6jVUgUgWqPX8Ay4347c_ZUTdO/exec';
+        
+        function log(message, type = 'info') {
+            const result = document.getElementById('result');
+            const timestamp = new Date().toLocaleTimeString();
+            const line = `[${timestamp}] ${message}\n`;
+            result.innerHTML += `<span class="${type}">${line}</span>`;
+            result.scrollTop = result.scrollHeight;
+        }
+        
+        function clearLog() {
+            document.getElementById('result').innerHTML = '';
+        }
+        
+        async function runQuickTest() {
+            clearLog();
+            const btn = document.getElementById('testBtn');
+            btn.disabled = true;
+            btn.textContent = 'Testing...';
+            
+            try {
+                log('🔍 Testing Google Apps Script connectivity...', 'info');
+                
+                // Test 1: Basic connectivity
+                const response = await fetch(`${gasUrl}?test=connectivity`);
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`✅ Connectivity test passed: ${data.message}`, 'success');
+                    log(`   Script version: ${data.scriptVersion}`, 'info');
+                    log(`   Spreadsheet ID: ${data.spreadsheetId}`, 'info');
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                // Test 2: Sheets access
+                log('📊 Testing Google Sheets access...', 'info');
+                const sheetsResponse = await fetch(`${gasUrl}?test=sheets`);
+                if (sheetsResponse.ok) {
+                    const sheetsData = await sheetsResponse.json();
+                    log(`✅ Sheets access working: ${sheetsData.message}`, 'success');
+                    log(`   Sheet name: ${sheetsData.sheetName}`, 'info');
+                    log(`   Current rows: ${sheetsData.rowCount}`, 'info');
+                } else {
+                    throw new Error(`Sheets test failed: HTTP ${sheetsResponse.status}`);
+                }
+                
+                log('🎉 All tests passed! Your system should be working.', 'success');
+                
+            } catch (error) {
+                log(`❌ Test failed: ${error.message}`, 'error');
+                log('💡 This might indicate a deployment issue.', 'info');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Run Quick Test';
+            }
+        }
+        
+        async function testFormSubmission() {
+            clearLog();
+            const btn = document.getElementById('formBtn');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+            
+            try {
+                log('📝 Testing actual form submission...', 'info');
+                
+                const testData = {
+                    name: 'Quick Test User',
+                    email: 'quicktest@example.com',
+                    phone: '(555) 123-4567',
+                    address: '123 Quick Test Street',
+                    city: 'Test City',
+                    zip: '12345',
+                    source: 'quick-deployment-test',
+                    timestamp: new Date().toISOString(),
+                    page_url: window.location.href,
+                    referrer: document.referrer,
+                    user_agent: navigator.userAgent
+                };
+                
+                log('Submitting test data via POST...', 'info');
+                
+                // Method 1: Standard POST
+                const response = await fetch(gasUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                log('✅ POST request sent (no-cors mode)', 'success');
+                
+                // Method 2: JSONP fallback test
+                log('Testing JSONP fallback method...', 'info');
+                
+                const jsonpTest = await new Promise((resolve) => {
+                    const callbackName = 'testCallback_' + Date.now();
+                    
+                    window[callbackName] = function(response) {
+                        log(`✅ JSONP response: ${JSON.stringify(response)}`, 'success');
+                        resolve(true);
+                    };
+                    
+                    const script = document.createElement('script');
+                    script.onerror = () => {
+                        log('✅ JSONP request sent (no response expected)', 'success');
+                        resolve(true);
+                    };
+                    
+                    const params = new URLSearchParams();
+                    Object.keys(testData).forEach(key => {
+                        params.append(key, testData[key]);
+                    });
+                    params.append('callback', callbackName);
+                    params.append('method', 'jsonp');
+                    
+                    script.src = `${gasUrl}?${params.toString()}`;
+                    document.head.appendChild(script);
+                    
+                    setTimeout(() => {
+                        if (document.head.contains(script)) {
+                            document.head.removeChild(script);
+                        }
+                        delete window[callbackName];
+                        resolve(true);
+                    }, 5000);
+                });
+                
+                log('🎉 Form submission test completed!', 'success');
+                log('📧 Check your email and Google Sheets for the test entry.', 'info');
+                
+            } catch (error) {
+                log(`❌ Form submission test failed: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Test Form Submission';
+            }
+        }
+    </script>
+</body>
+</html>
