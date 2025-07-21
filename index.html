@@ -12,6 +12,10 @@
     <!-- Preload critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://imgur.com">
+    <link rel="preconnect" href="https://script.google.com">
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="preload" href="form-handler.js" as="script">
     
     <title>Florida Solar Analysis - See Your Savings Potential</title>
     
@@ -19,10 +23,10 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap"
       rel="stylesheet"
+      media="print" 
+      onload="this.media='all'"
     />
     <link rel="stylesheet" href="styles.css" />
-    <!-- Enhanced Polish Styles -->
-    <link rel="stylesheet" href="polish-styles.css" />
     
     <!-- Float-in Animation Styles -->
     <style>
@@ -87,9 +91,6 @@
         to { transform: rotate(360deg); }
       }
     </style>
-    
-    <!-- Environment Loader Script -->
-    <script src="env-loader.js"></script>
 </head>
 <body>
 
@@ -108,8 +109,8 @@
 
       <!-- Urgency Message - Moved above form for Instagram users -->
       <div class="mt-4 sm:mt-6 mb-6 sm:mb-8">
-        <p class="text-sm sm:text-base text-yellow-300 font-medium hero-text-shadow max-w-3xl mx-auto leading-relaxed">
-          Utilities are counting on you to miss the Dec 31st solar deadline
+        <p class="text-base sm:text-lg md:text-xl text-yellow-300 font-medium hero-text-shadow max-w-3xl mx-auto leading-relaxed">
+          Utilities are counting on you to miss the <span class="font-bold underline">Dec 31st Solar Deadline</span>
         </p>
       </div>
       
@@ -362,96 +363,110 @@
 
 
   <main role="main">
-    <!-- Section 1: Trust & Social Proof -->
-    <section class="bg-gray-50 py-20 sm:py-24 md:py-28 border-t border-gray-200" aria-labelledby="trust-section">
+    <!-- Section 1: How It Works -->
+    <section class="bg-gray-50 py-20 sm:py-24 md:py-28 border-t border-gray-200" aria-labelledby="how-it-works-section">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Trust Block -->
         <div class="max-w-6xl mx-auto">
-          <div class="text-center mb-20 sm:mb-24 animate-float-in">
-            <h2 id="trust-section" class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 sm:mb-8">
-              Florida's Most Trusted <br>
-              <span class="text-blue-600">Solar Installation Partner</span>
+          <!-- Section Header -->
+          <div class="text-center mb-16 sm:mb-20 animate-float-in">
+            <div class="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-full text-sm font-semibold mb-6 shadow-lg">
+              ⚡ Simple 3-Step Process
+            </div>
+            <h2 id="how-it-works-section" class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
+              How It Works
             </h2>
+            <p class="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
+              Getting solar has never been easier. Here's exactly how we make the switch seamless for you.
+            </p>
           </div>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 md:gap-16 text-center animate-float-in-delay">
-            <div class="flex flex-col items-center">
-              <svg
-                class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-blue-600 mb-4 sm:mb-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-              <p class="font-semibold text-sm sm:text-base md:text-lg">NABCEP Certified Installer</p>
+
+          <!-- How It Works GIF -->
+          <div class="text-center mb-16 animate-float-in-delay">
+            <div class="relative max-w-4xl mx-auto">
+              <!-- Glowing border effect -->
+              <div class="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 rounded-3xl blur opacity-20 animate-pulse"></div>
+              
+              <!-- GIF container with enhanced styling -->
+              <div class="relative bg-white p-4 rounded-3xl shadow-2xl">
+                <div class="relative rounded-2xl overflow-hidden bg-gray-100 shadow-inner">
+                  <img 
+                    src="https://imgur.com/jE7bhWf.gif" 
+                    alt="How Solar Installation Works - Step by Step Process"
+                    class="w-full h-auto rounded-2xl shadow-lg"
+                  />
+                  
+                  <!-- Premium overlay badge -->
+                  <div class="absolute top-4 left-4 bg-green-600 bg-opacity-90 text-white px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm">
+                    <span class="flex items-center">
+                      <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                      </svg>
+                      Professional Process
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="flex flex-col items-center">
-              <svg
-                class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-blue-600 mb-4 sm:mb-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                ></path>
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                ></path>
-              </svg>
-              <p class="font-semibold text-sm sm:text-base md:text-lg">Serving Tampa Bay & Neighboring Areas</p>
+          </div>
+
+          <!-- 3 Step Process Cards -->
+          <div class="grid md:grid-cols-3 gap-8 animate-float-in-delay">
+            <!-- Step 1 -->
+            <div class="bg-white rounded-xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6 shadow-lg">
+                1
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-4">Free Analysis</h3>
+              <p class="text-gray-600 leading-relaxed">
+                We analyze your roof, energy usage, and create a custom solar plan designed specifically for your home and budget.
+              </p>
             </div>
-            <div class="flex flex-col items-center">
-              <svg
-                class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-blue-600 mb-4 sm:mb-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-              <p class="font-semibold text-sm sm:text-base md:text-lg">25-Year Warranty on Equipment & Service</p>
+
+            <!-- Step 2 -->
+            <div class="bg-white rounded-xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6 shadow-lg">
+                2
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-4">Professional Installation</h3>
+              <p class="text-gray-600 leading-relaxed">
+                Our NABCEP-certified team handles all permits, paperwork, and installation with zero upfront cost to you.
+              </p>
             </div>
-            <div class="flex flex-col items-center">
-              <svg
-                class="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 text-blue-600 mb-4 sm:mb-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                ></path>
-              </svg>
-              <p class="font-semibold text-xs sm:text-base">Over 2,000 Florida Home Installs</p>
+
+            <!-- Step 3 -->
+            <div class="bg-white rounded-xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+              <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6 shadow-lg">
+                3
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 mb-4">Start Saving</h3>
+              <p class="text-gray-600 leading-relaxed">
+                Switch on and start saving immediately with lower monthly payments and a 25-year warranty on everything.
+              </p>
             </div>
+          </div>
+
+          <!-- Call to Action -->
+          <div class="text-center mt-12">
+            <a
+              href="#hero-form"
+              class="inline-flex items-center bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white font-bold text-lg py-4 px-8 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 relative overflow-hidden group"
+            >
+              <span class="relative z-10 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-4 4"/>
+                </svg>
+                Start My Free Analysis
+                <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+              </span>
+              <div class="absolute inset-0 bg-gradient-to-r from-yellow-500 via-orange-600 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </a>
+            <p class="text-sm text-gray-500 mt-3">Takes less than 60 seconds • No obligation</p>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Section 2: Chart -->
     <section class="bg-white py-16 sm:py-20">
@@ -747,7 +762,7 @@
 </div>
 
 <!-- Form Handler Script -->
-<script src="form-handler.js"></script>
+<script src="form-handler.js" async></script>
 
 <!-- Original Animation Script -->
 
