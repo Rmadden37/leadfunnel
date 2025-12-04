@@ -15,14 +15,17 @@ export default async function handler(req, res) {
   try {
     const lead = req.body;
 
-    const message = `🔔 *New Solar Lead!*
+    // Escape Markdown special characters in user input
+    const esc = (str) => (str || 'N/A').replace(/[_*[\]()~`>#+\-=|{}.!]/g, '\\$&');
 
-👤 *Name:* ${lead.name || 'N/A'}
-📍 *Address:* ${lead.address || 'N/A'}
-🏙️ *City:* ${lead.city || 'N/A'} ${lead.zip || ''}
-📞 *Phone:* ${lead.phone || 'N/A'}
-📧 *Email:* ${lead.email || 'N/A'}
-🔗 *Source:* ${lead.source || 'Website'}
+    const message = `🔔 *New Solar Lead\\!*
+
+👤 *Name:* ${esc(lead.name)}
+📍 *Address:* ${esc(lead.address)}
+🏙️ *City:* ${esc(lead.city)} ${esc(lead.zip)}
+📞 *Phone:* ${esc(lead.phone)}
+📧 *Email:* ${esc(lead.email)}
+🔗 *Source:* ${esc(lead.source) || 'Website'}
 🕐 *Time:* ${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })}`;
 
     const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
@@ -33,7 +36,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         chat_id: TELEGRAM_CHAT_ID,
         text: message,
-        parse_mode: 'Markdown'
+        parse_mode: 'MarkdownV2'
       })
     });
 
