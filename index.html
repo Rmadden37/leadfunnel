@@ -95,19 +95,19 @@
 <body>
 
 <!-- Full-width container -->
-<div class="w-full pb-12 sm:pb-16">
+<div class="w-full pb-24 sm:pb-16 overflow-x-hidden">
   <!-- Added padding-bottom for floating banner -->
   <!-- Hero Section -->
   <header id="hero-form" class="hero-bg text-white relative" style="background: linear-gradient(135deg, #1F3A8E 0%, #2557D7 25%, #4F85F6 50%, #7DB9FF 75%, #A0D2FF 100%) !important;">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 sm:pt-12 sm:pb-16 md:pb-20 text-center">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12 sm:pt-12 sm:pb-16 md:pb-20 text-center">
       <!-- Hero Headline -->
-      <h1 class="hero-title text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-10xl font-black leading-tight tracking-wide mb-6 sm:mb-8 hero-text-shadow max-w-6xl mx-auto">
+      <h1 class="hero-title text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-tight tracking-wide mb-4 sm:mb-8 hero-text-shadow max-w-6xl mx-auto">
         Still paying double for electricity?
       </h1>
 
       <!-- Urgency Message - Moved above form for Instagram users -->
-      <div class="mt-4 sm:mt-6 mb-6 sm:mb-8">
-        <p class="text-xl sm:text-2xl md:text-3xl text-yellow-300 font-medium hero-text-shadow max-w-3xl mx-auto leading-relaxed">
+      <div class="mt-2 sm:mt-6 mb-4 sm:mb-8">
+        <p class="text-lg sm:text-2xl md:text-3xl text-yellow-300 font-medium hero-text-shadow max-w-3xl mx-auto leading-relaxed">
           Don't miss the <span class="font-bold underline">Dec 31st Solar Deadline!</span>
         </p>
       </div>
@@ -154,6 +154,7 @@
               name="name"
               placeholder="First Name" 
               class="w-full px-4 py-3 border border-gray-500 rounded-lg placeholder-gray-600"
+              autocomplete="given-name"
               required
             />
             
@@ -163,6 +164,7 @@
               name="address"
               placeholder="Street Address" 
               class="w-full px-4 py-3 border border-gray-500 rounded-lg placeholder-gray-600"
+              autocomplete="street-address"
               required
             />
             
@@ -173,6 +175,7 @@
                 name="city"
                 placeholder="City" 
                 class="w-full px-4 py-3 border border-gray-500 rounded-lg placeholder-gray-600"
+                autocomplete="address-level2"
                 required
               />
               <input 
@@ -183,6 +186,8 @@
                 class="w-full px-4 py-3 border border-gray-500 rounded-lg placeholder-gray-600"
                 pattern="[0-9]{5}"
                 maxlength="5"
+                inputmode="numeric"
+                autocomplete="postal-code"
                 required
               />
             </div>
@@ -193,6 +198,8 @@
               name="phone"
               placeholder="Phone" 
               class="w-full px-4 py-3 border border-gray-500 rounded-lg placeholder-gray-600"
+              inputmode="tel"
+              autocomplete="tel"
               required
             />
             
@@ -202,15 +209,22 @@
               name="email"
               placeholder="Email" 
               class="w-full px-4 py-3 border border-gray-500 rounded-lg placeholder-gray-600"
+              inputmode="email"
+              autocomplete="email"
               required
             />
             
             <button 
               type="submit"
-              class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold py-3 px-6 rounded-lg"
+              class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold py-3 px-6 rounded-lg text-lg shadow-lg hover:shadow-xl transform transition hover:-translate-y-0.5"
             >
               Get My Analysis
             </button>
+            
+            <p class="text-xs text-gray-500 text-center mt-3 flex items-center justify-center opacity-80">
+              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              Your information is 100% secure. No spam.
+            </p>
           </form>
           
           <div class="mt-4 text-center">
@@ -229,19 +243,19 @@
         <p class="text-lg sm:text-xl md:text-2xl text-gray-700 font-bold mb-2">As Featured On:</p>
         <p class="text-sm text-gray-500">Trusted by Florida's leading media outlets</p>
       </div>
-      <div class="flex justify-center items-center space-x-8 sm:space-x-12 md:space-x-16 lg:space-x-20 opacity-80 hover:opacity-100 transition-opacity duration-300 animate-float-in-delay">
+      <div class="grid grid-cols-2 gap-6 sm:flex sm:justify-center sm:items-center sm:space-x-12 md:space-x-16 lg:space-x-20 opacity-80 hover:opacity-100 transition-opacity duration-300 animate-float-in-delay max-w-lg mx-auto sm:max-w-none">
         <!-- Enhanced credibility media images -->
-        <div class="credibility-logo">
-          <img src="https://i.imgur.com/2MfXgTQ.png" alt="10 Tampa Bay News" class="h-14 sm:h-18 md:h-22 lg:h-28 max-w-[100px] sm:max-w-[130px] md:max-w-[160px] lg:max-w-none grayscale hover:grayscale-0 transition-all duration-300 filter hover:brightness-110" loading="lazy">
+        <div class="credibility-logo flex justify-center items-center">
+          <img src="https://i.imgur.com/2MfXgTQ.png" alt="10 Tampa Bay News" class="h-8 sm:h-12 md:h-16 lg:h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 filter hover:brightness-110" loading="lazy">
         </div>
-        <div class="credibility-logo">
-          <img src="https://i.imgur.com/NyWIFQ8.png" alt="ABC Action News" class="h-14 sm:h-18 md:h-22 lg:h-28 max-w-[100px] sm:max-w-[130px] md:max-w-[160px] lg:max-w-none grayscale hover:grayscale-0 transition-all duration-300 filter hover:brightness-110" loading="lazy">
+        <div class="credibility-logo flex justify-center items-center">
+          <img src="https://i.imgur.com/NyWIFQ8.png" alt="ABC Action News" class="h-8 sm:h-12 md:h-16 lg:h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 filter hover:brightness-110" loading="lazy">
         </div>
-        <div class="credibility-logo">
-          <img src="https://i.imgur.com/DYvyrpF.png" alt="FOX 13 News" class="h-14 sm:h-18 md:h-22 lg:h-28 max-w-[100px] sm:max-w-[130px] md:max-w-[160px] lg:max-w-none grayscale hover:grayscale-0 transition-all duration-300 filter hover:brightness-110" loading="lazy">
+        <div class="credibility-logo flex justify-center items-center">
+          <img src="https://i.imgur.com/DYvyrpF.png" alt="FOX 13 News" class="h-8 sm:h-12 md:h-16 lg:h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 filter hover:brightness-110" loading="lazy">
         </div>
-        <div class="credibility-logo">
-          <img src="https://i.imgur.com/iKstT5c.png" alt="Tampa Bay Times" class="h-14 sm:h-18 md:h-22 lg:h-28 max-w-[100px] sm:max-w-[130px] md:max-w-[160px] lg:max-w-none grayscale hover:grayscale-0 transition-all duration-300 filter hover:brightness-110" loading="lazy">
+        <div class="credibility-logo flex justify-center items-center">
+          <img src="https://i.imgur.com/iKstT5c.png" alt="Tampa Bay Times" class="h-8 sm:h-12 md:h-16 lg:h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 filter hover:brightness-110" loading="lazy">
         </div>
       </div>
     </div>
@@ -258,13 +272,13 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <!-- Enhanced Section Header -->
       <div class="text-center mb-20 sm:mb-24 animate-float-in">
-        <h2 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 mb-8 sm:mb-12 leading-tight tracking-tight">
+        <h2 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 mb-8 sm:mb-12 leading-tight tracking-tight">
           See Our Professional 
           <span class="block mt-2">Installation Process</span>
         </h2>
         <!-- Decorative underline -->
         <div class="w-32 sm:w-48 md:w-64 h-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mx-auto mb-8 sm:mb-12"></div>
-        <p class="text-xl sm:text-2xl text-gray-600 leading-relaxed max-w-4xl mx-auto font-medium">
+        <p class="text-lg sm:text-2xl text-gray-600 leading-relaxed max-w-4xl mx-auto font-medium">
           Watch our certified installation team in action. From initial assessment to final activation, we handle every detail with precision and professionalism.
         </p>
       </div>
@@ -321,6 +335,18 @@
         </div>
       </div>
 
+      <!-- Mobile Stats Grid (Visible only on mobile) -->
+      <div class="grid grid-cols-2 gap-4 mt-8 sm:hidden max-w-sm mx-auto">
+        <div class="bg-white rounded-xl shadow-lg p-4 text-center border border-blue-100">
+          <div class="text-2xl font-bold text-blue-600">2,000+</div>
+          <div class="text-xs text-gray-600 font-medium uppercase tracking-wide mt-1">Homes Installed</div>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg p-4 text-center border border-green-100">
+           <div class="text-2xl font-bold text-green-600">$60k+</div>
+           <div class="text-xs text-gray-600 font-medium uppercase tracking-wide mt-1">Avg. Savings</div>
+        </div>
+      </div>
+
       <!-- Call-to-action below video -->
       <div class="text-center mt-16 animate-float-in-delay">
         <a
@@ -352,12 +378,12 @@
         <div class="max-w-6xl mx-auto">
           <!-- Enhanced Section Header -->
           <div class="text-center mb-20 sm:mb-24 animate-float-in">
-            <h2 id="how-it-works-section" class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 mb-8 sm:mb-12 leading-tight tracking-tight">
+            <h2 id="how-it-works-section" class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 mb-8 sm:mb-12 leading-tight tracking-tight">
               3 Ways to Go Solar
             </h2>
             <!-- Decorative underline -->
             <div class="w-32 sm:w-48 md:w-64 h-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mx-auto mb-8 sm:mb-12"></div>
-            <p class="text-xl sm:text-2xl text-gray-600 leading-relaxed max-w-4xl mx-auto font-medium">
+            <p class="text-lg sm:text-2xl text-gray-600 leading-relaxed max-w-4xl mx-auto font-medium">
               During your free analysis, we'll help you decide which payment option works best for your specific situation, budget, and savings goals. There's no pressure - just personalized guidance to help you make the right choice.
             </p>
           </div>
@@ -430,12 +456,12 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <!-- Enhanced Section Header -->
         <div class="mb-20 sm:mb-24 animate-float-in">
-          <h2 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 mb-8 sm:mb-12 leading-tight tracking-tight">
+          <h2 class="text-3xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 mb-8 sm:mb-12 leading-tight tracking-tight">
             Power Costs Are Scheduled To Increase In The Future
           </h2>
           <!-- Decorative underline -->
           <div class="w-32 sm:w-48 md:w-64 h-2 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full mx-auto mb-8 sm:mb-12"></div>
-          <p class="text-xl sm:text-2xl text-gray-600 leading-relaxed max-w-4xl mx-auto font-medium">
+          <p class="text-lg sm:text-2xl text-gray-600 leading-relaxed max-w-4xl mx-auto font-medium">
             Florida utility companies have consistently raised rates year over year. See how much your electric bill is projected to cost over the next several years.
           </p>
         </div>
@@ -564,14 +590,33 @@
     <section class="bg-white py-16 sm:py-20 border-t border-gray-100">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div class="max-w-3xl mx-auto animate-float-in">
-          <div class="bg-blue-600 text-white rounded-lg p-10 shadow-lg">
-            <p class="text-3xl italic leading-relaxed">
-              “I locked in my rate just in time. My energy bill used to be $280
-              a month. Now it’s under $30, and I didn’t pay a penny up front.”
-            </p>
-            <p class="mt-6 font-bold text-yellow-400 text-lg">
-              – Dave M., Clearwater FL
-            </p>
+          <div class="bg-blue-600 text-white rounded-lg p-10 shadow-lg relative overflow-hidden transform hover:scale-[1.02] transition-transform duration-300">
+            <!-- Decorative quote mark -->
+            <div class="absolute top-0 left-4 text-blue-500 opacity-30 text-9xl font-serif leading-none select-none">“</div>
+            
+            <div class="relative z-10">
+              <!-- 5 Stars -->
+              <div class="flex justify-center mb-6 text-yellow-400 space-x-1">
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              </div>
+              
+              <p class="text-2xl sm:text-3xl italic leading-relaxed font-medium">
+                “I locked in my rate just in time. My energy bill used to be $280
+                a month. Now it’s under $30, and I didn’t pay a penny up front.”
+              </p>
+              
+              <div class="mt-8 flex flex-col sm:flex-row items-center justify-center sm:space-x-3 space-y-2 sm:space-y-0">
+                <span class="font-bold text-white text-lg">– Dave M., Clearwater FL</span>
+                <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center shadow-sm">
+                  <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  Verified Homeowner
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -583,7 +628,7 @@
         <div
           class="rounded-lg shadow-lg p-8 md:p-12 max-w-4xl mx-auto border-l-4 border-red-500 animate-float-in"
         >
-          <h3 class="text-4xl font-bold text-gray-800 mb-4">
+          <h3 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
             🌀 Don't Get Caught in the Dark
           </h3>
           <p class="text-gray-700 leading-relaxed mb-6">
@@ -670,7 +715,7 @@
           class="text-center bg-white py-16 rounded-lg shadow-lg border-t-4 border-yellow-500 animate-float-in"
         >
           <div class="max-w-4xl mx-auto px-6">
-            <h2 class="text-4xl font-bold text-gray-800 mb-4">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
               Your Last Chance to Lock In 2025 Rates.
             </h2>
             <p class="text-gray-700 max-w-2xl mx-auto mb-8 text-lg">
@@ -707,13 +752,21 @@
 
 <!-- Floating Urgency Banner -->
 <div
-  class="floating-banner fixed bottom-0 left-0 right-0 bg-red-800 text-white py-1 px-2 shadow-2xl z-40"
+  class="floating-banner fixed bottom-0 left-0 right-0 bg-red-800 text-white shadow-2xl z-40 cursor-pointer transition-all duration-300 hover:bg-red-700"
+  onclick="document.getElementById('hero-form').scrollIntoView({behavior: 'smooth'})"
 >
-  <div class="max-w-md mx-auto flex items-center justify-center text-center">
-    <p class="text-xs sm:text-sm font-semibold">
-      Federal Solar Incentives Available - 
-      <span class="font-bold text-yellow-300">Act Now!</span>
-    </p>
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between sm:justify-center">
+    <div class="flex items-center space-x-2">
+      <span class="animate-pulse text-yellow-400">⚠️</span>
+      <p class="text-sm sm:text-base font-semibold leading-tight">
+        Federal Incentives Ending: <span class="text-yellow-300 font-bold">Act Now!</span>
+      </p>
+    </div>
+    <button 
+      class="ml-4 bg-yellow-400 text-red-900 text-xs sm:text-sm font-bold py-2 px-4 rounded-full shadow-lg hover:bg-yellow-300 transition-colors uppercase tracking-wider whitespace-nowrap"
+    >
+      Get Analysis
+    </button>
   </div>
 </div>
 
