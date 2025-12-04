@@ -4,6 +4,8 @@ class SolarFormHandler {
         // Your Google Apps Script Web App URL - GOOGLE DRIVE HTML EMAIL VERSION
         // Deployment ID: AKfycbyGOasfnJJecpWNrRNK7KcEYTW7FHxNMfr9tjExhEdQZF8xkNfBvuRB9H1oVgktogoi
         this.googleAppsScriptUrl = 'https://script.google.com/macros/s/AKfycbyGOasfnJJecpWNrRNK7KcEYTW7FHxNMfr9tjExhEdQZF8xkNfBvuRB9H1oVgktogoi/exec';
+        // Telegram notification endpoint (Vercel serverless function)
+        this.telegramNotifyUrl = '/api/notify';
         this.init();
     }
 
@@ -60,9 +62,12 @@ class SolarFormHandler {
                 throw new Error('Please fill in all required fields correctly');
             }
 
-            // Submit to Google Apps Script
-            await this.submitToGoogleSheets(data);
-            
+            // Submit to Google Sheets and send Telegram notification in parallel
+            await Promise.all([
+                this.submitToGoogleSheets(data),
+                this.sendTelegramNotification(data)
+            ]);
+
             // Success - redirect to thank you page
             console.log('✅ Form submitted successfully');
             window.location.href = 'thank-you.html';
@@ -164,25 +169,25 @@ class SolarFormHandler {
     async submitViaJsonp(data) {
         return new Promise((resolve, reject) => {
             const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-            
+
             window[callbackName] = function(response) {
                 delete window[callbackName];
                 document.body.removeChild(script);
-                
+
                 if (response.status === 'success') {
                     resolve(response);
                 } else {
                     reject(new Error(response.message || 'JSONP submission failed'));
                 }
             };
-            
+
             // Build URL with parameters
             const params = new URLSearchParams({
                 ...data,
                 method: 'jsonp',
                 callback: callbackName
             });
-            
+
             const script = document.createElement('script');
             script.src = `${this.googleAppsScriptUrl}?${params.toString()}`;
             script.onerror = () => {
@@ -190,9 +195,9 @@ class SolarFormHandler {
                 document.body.removeChild(script);
                 reject(new Error('JSONP script failed to load'));
             };
-            
+
             document.body.appendChild(script);
-            
+
             // Timeout after 30 seconds
             setTimeout(() => {
                 if (window[callbackName]) {
@@ -202,6 +207,26 @@ class SolarFormHandler {
                 }
             }, 30000);
         });
+    }
+
+    async sendTelegramNotification(data) {
+        try {
+            console.log('📱 Sending Telegram notification...');
+            const response = await fetch(this.telegramNotifyUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                console.log('✅ Telegram notification sent');
+            } else {
+                console.warn('⚠️ Telegram notification failed:', response.status);
+            }
+        } catch (error) {
+            // Don't throw - Telegram failure shouldn't block form submission
+            console.warn('⚠️ Telegram notification error:', error.message);
+        }
     }
 
     setupCTAButtons() {
@@ -245,7 +270,10 @@ class SolarFormHandler {
         };
 
         try {
-            await this.submitToGoogleSheets(data);
+            await Promise.all([
+                this.submitToGoogleSheets(data),
+                this.sendTelegramNotification(data)
+            ]);
             console.log('✅ Quick lead submitted');
         } catch (error) {
             console.error('❌ Quick lead submission error:', error);
